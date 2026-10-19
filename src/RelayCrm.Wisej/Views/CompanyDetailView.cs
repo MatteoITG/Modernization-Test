@@ -33,7 +33,8 @@ namespace RelayCrm.Views
 			IconImages.Apply(this.dealsStrip);
 			IconImages.Apply(this.activityStrip);
 			IconImages.Apply(this.tasksStrip);
-			this.listViewActivity.SmallImageList = IconImages.List(16, "telephone", "envelope", "people", "sticky");
+			ToneExtensions.AddStageTones(this.colContactStage.ToneMap);
+			ToneExtensions.AddTaskStatusTones(this.colTaskStatus.ToneMap);
 		}
 
 		/// <summary>
@@ -53,6 +54,8 @@ namespace RelayCrm.Views
 				if (this.company == null)
 					return;
 				this.stages = LookupService.Stages();
+				foreach (var stage in this.stages)
+					this.colDealStage.ToneMap[stage.Name] = ToneExtensions.DealStageTone(stage.IsWon, stage.IsLost).ToChip();
 				contacts = CompanyService.Contacts(companyId);
 				deals = CompanyService.Deals(companyId);
 				activities = CompanyService.Activities(companyId);
@@ -80,9 +83,9 @@ namespace RelayCrm.Views
 			this.gridContacts.DataSource = contacts;
 			this.gridDeals.DataSource = deals;
 			this.gridTasks.DataSource = tasks;
-			this.labelNoContacts.Visible = contacts.Count == 0;
-			this.labelNoDeals.Visible = deals.Count == 0;
-			this.labelNoTasks.Visible = tasks.Count == 0;
+			this.emptyContacts.Visible = contacts.Count == 0;
+			this.emptyDeals.Visible = deals.Count == 0;
+			this.emptyTasks.Visible = tasks.Count == 0;
 
 			this.tabContacts.Text = "Contacts (" + contacts.Count + ")";
 			this.tabDeals.Text = "Deals (" + deals.Count + ")";
@@ -104,10 +107,8 @@ namespace RelayCrm.Views
 		{
 			var c = this.company;
 			this.labelName.Text = c.Name;
-			var old = this.pictureAvatar.Image;
-			this.pictureAvatar.Image = Avatars.Create(c.Name, SettingsService.AvatarPalette[c.Id % SettingsService.AvatarPalette.Length],
-				52);
-			old?.Dispose();
+			this.avatar.Text = RelayCrm.Text.Initials(c.Name);
+			this.avatar.ImageSource = Avatars.Source(c.Name, SettingsService.AvatarPalette[c.Id % SettingsService.AvatarPalette.Length], rounded: true);
 
 			var place = string.Join(", ", new[] { c.City, c.Country }.Where(s => !string.IsNullOrWhiteSpace(s)));
 			this.labelSubtitle.Text = string.Join(" · ", new[] { c.Industry, place }.Where(s => !string.IsNullOrWhiteSpace(s)));
@@ -125,21 +126,21 @@ namespace RelayCrm.Views
 		{
 			var c = this.company;
 
-			this.labelOpenPipelineValue.Text = Fmt.MoneyShort(c.OpenPipeline);
-			this.labelOpenPipelineCaption.Text = c.OpenDeals == 1 ? "1 open deal" : c.OpenDeals + " open deals";
+			this.kpiOpenPipeline.Value = Fmt.MoneyShort(c.OpenPipeline);
+			this.kpiOpenPipeline.Caption = c.OpenDeals == 1 ? "1 open deal" : c.OpenDeals + " open deals";
 
-			this.labelWonThisYearValue.Text = Fmt.MoneyShort(c.WonThisYear);
-			this.labelWonThisYearCaption.Text = (c.WonThisYearCount == 1 ? "1 deal won" : c.WonThisYearCount + " deals won") + " in " + DateTime.Today.Year;
+			this.kpiWonThisYear.Value = Fmt.MoneyShort(c.WonThisYear);
+			this.kpiWonThisYear.Caption = (c.WonThisYearCount == 1 ? "1 deal won" : c.WonThisYearCount + " deals won") + " in " + DateTime.Today.Year;
 
-			this.labelContactsValue.Text = c.ContactCount.ToString(Fmt.Culture);
-			this.labelContactsCaption.Text = c.ContactCount == 1 ? "person at this company" : "people at this company";
+			this.kpiContacts.Value = c.ContactCount.ToString(Fmt.Culture);
+			this.kpiContacts.Caption = c.ContactCount == 1 ? "person at this company" : "people at this company";
 
-			this.labelLastActivityValue.Text = c.LastActivity == null ? "Never" : Capitalize(Fmt.Relative(c.LastActivity));
-			this.labelLastActivityCaption.Text = c.LastActivity == null ? "No activity logged" : Fmt.DateAndTime(c.LastActivity.Value);
+			this.kpiLastActivity.Value = c.LastActivity == null ? "Never" : Capitalize(Fmt.Relative(c.LastActivity));
+			this.kpiLastActivity.Caption = c.LastActivity == null ? "No activity logged" : Fmt.DateAndTime(c.LastActivity.Value);
 			// no activity for two months: the account needs attention.
-			this.labelLastActivityValue.ForeColor = c.LastActivity == null || c.LastActivity < DateTime.Today.AddDays(-60)
-				? Tone.Warning.ToColor()
-				: this.ForeColor;
+			this.kpiLastActivity.Tone = c.LastActivity == null || c.LastActivity < DateTime.Today.AddDays(-60)
+				? KpiTone.Warning
+				: KpiTone.Neutral;
 		}
 
 		private void ShowOverview()
@@ -162,24 +163,22 @@ namespace RelayCrm.Views
 		private void ShowActivities(List<CompanyActivityRow> activities)
 		{
 			var now = DateTime.Now;
-			this.listViewActivity.BeginUpdate();
-			this.listViewActivity.Items.Clear();
+			this.timelineActivity.Items.Clear();
 			foreach (var a in activities)
 			{
-				var item = new ListViewItem(Fmt.DateAndTime(a.Date), Icons.NameOf(ActivityLogService.Icon(a.Type))) { Tag = a.Id };
-				item.SubItems.Add(a.Type.ToString());
-				item.SubItems.Add(a.Subject ?? "");
-				item.SubItems.Add(a.ContactName ?? "");
-				item.SubItems.Add(a.UserName ?? "");
-				item.SubItems.Add((a.Body ?? "").Replace("\r", " ").Replace("\n", " "));
-				item.ToolTipText = a.Body;
-				// planned activities stand out.
-				if (a.Date > now)
-					item.ForeColor = Tone.Primary.ToColor();
-				this.listViewActivity.Items.Add(item);
+				this.timelineActivity.Items.Add(new TimelineItem
+				{
+					Time = a.Date,
+					Title = string.IsNullOrEmpty(a.Subject) ? a.Type.ToString() : a.Subject,
+					Description = a.Type + (string.IsNullOrEmpty(a.ContactName) ? "" : " · " + a.ContactName) + " · " + (a.UserName ?? "")
+						+ (string.IsNullOrEmpty(a.Body) ? "" : " · " + a.Body),
+					Icon = ActivityLogService.Icon(a.Type),
+					// planned activities stand out.
+					Tone = a.Date > now ? TimelineTone.Primary : TimelineTone.Neutral,
+					Tag = a.Id,
+				});
 			}
-			this.listViewActivity.EndUpdate();
-			this.labelNoActivity.Visible = activities.Count == 0;
+			this.emptyActivity.Visible = activities.Count == 0;
 
 			var past = activities.Count(a => a.Date <= now);
 			var planned = activities.Count - past;
@@ -288,27 +287,11 @@ namespace RelayCrm.Views
 				Navigator.OpenContact(row.Id);
 		}
 
-		private void gridContacts_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-		{
-			if (e.RowIndex >= 0 && e.ColumnIndex == this.colContactStage.Index)
-				e.CellStyle.ForeColor = ToneExtensions.StageTone(e.Value as string).ToColor();
-		}
-
 		private void gridDeals_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
 			var row = GridHelper.RowAt<CompanyDealRow>(this.gridDeals, e.RowIndex);
 			if (row != null && Navigator.OpenDeal(row.Id) && !this.IsDisposed)
 				RefreshData();
-		}
-
-		private void gridDeals_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-		{
-			if (e.RowIndex < 0 || e.ColumnIndex != this.colDealStage.Index)
-				return;
-
-			var stage = this.stages.FirstOrDefault(s => s.Name == e.Value as string);
-			if (stage != null)
-				e.CellStyle.ForeColor = ToneExtensions.DealStageTone(stage.IsWon, stage.IsLost).ToColor();
 		}
 
 		private void gridTasks_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -318,19 +301,6 @@ namespace RelayCrm.Views
 			{
 				RefreshData();
 				Navigator.RefreshBadges();
-			}
-		}
-
-		private void gridTasks_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-		{
-			if (e.RowIndex < 0 || e.ColumnIndex != this.colTaskStatus.Index)
-				return;
-
-			switch (e.Value as string)
-			{
-				case "Overdue": e.CellStyle.ForeColor = Tone.Danger.ToColor(); break;
-				case "Due soon": e.CellStyle.ForeColor = Tone.Warning.ToColor(); break;
-				case "Done": e.CellStyle.ForeColor = Tone.Success.ToColor(); break;
 			}
 		}
 

@@ -23,6 +23,12 @@ namespace RelayCrm.Views
 
 		private bool loading;
 
+		// lost reason asked in CardMoving, saved in CardMoved.
+		private string pendingLostReason;
+
+		// the card of the board the context menu acts on (the card clicked last).
+		private DealRow boardDeal;
+
 		public DealsView()
 		{
 			InitializeComponent();
@@ -80,6 +86,16 @@ namespace RelayCrm.Views
 		private void LoadLookups()
 		{
 			this.stages = LookupService.Stages();
+
+			// one board column per stage; the value is the stage id as text (DealRow.Status).
+			this.kanbanBoard.Columns.Clear();
+			this.colStage.ToneMap.Clear();
+			foreach (var stage in this.stages)
+			{
+				var tone = ToneExtensions.DealStageTone(stage.IsWon, stage.IsLost);
+				this.kanbanBoard.Columns.Add(new KanbanColumn { Text = stage.Name, Value = StatusOf(stage), Tone = tone.ToMeter() });
+				this.colStage.ToneMap[stage.Name] = tone.ToChip();
+			}
 
 			var owners = LookupService.Users().Select(u => new ListItem(u.Id, u.Name)).ToList();
 			owners.Insert(0, new ListItem(0, "All owners"));
@@ -167,55 +183,44 @@ namespace RelayCrm.Views
 			this.labelCaption.Text = string.IsNullOrEmpty(caption) ? "" : caption + "  (" + (list.Count == 1 ? "1 deal" : list.Count + " deals") + ")";
 			this.panelCaption.Visible = !string.IsNullOrEmpty(caption);
 
-			GridHelper.ShowEmpty(this.linkEmpty, list.Count == 0, "No deals match the filters.", "Clear filters");
+			GridHelper.ShowEmpty(this.emptyState, list.Count == 0, "No deals match the filters.", "Clear filters");
 
 			var count = list.Count;
 			var open = list.Where(r => r.IsOpen).Sum(r => r.Amount);
 			this.labelSummary.Text = count + (count == 1 ? " deal" : " deals") + " · " + Fmt.MoneyShort(list.Sum(r => r.Amount)) + " total · " + Fmt.MoneyShort(open) + " open";
 		}
 
-		/// <summary>Builds one column per stage with the cards of its deals.</summary>
+		/// <summary>Shows the deals on the board (one column per stage) with the totals of each stage.</summary>
 		private void ShowBoard()
 		{
-			var scroll = this.flowBoard.HorizontalScroll.Value;
-			this.flowBoard.SuspendLayout();
-			try
+			this.kanbanBoard.DataSource = this.rows;
+			foreach (var column in this.kanbanBoard.Columns)
 			{
-				// one column per stage, created once and reused.
-				var columns = this.flowBoard.Controls.OfType<StageColumn>().ToList();
-				if (columns.Count != this.stages.Count)
-				{
-					foreach (var column in columns)
-						column.Dispose();
-					columns = this.stages.Select(s =>
-					{
-						var column = new StageColumn();
-						column.CardDropped += stageColumn_CardDropped;
-						this.flowBoard.Controls.Add(column);
-						return column;
-					}).ToList();
-				}
+				var stage = StageOf(column);
+				if (stage == null)
+					continue;
 
-				for (var i = 0; i < this.stages.Count; i++)
-				{
-					var stage = this.stages[i];
-					columns[i].Bind(stage, this.rows.Where(r => r.StageId == stage.Id).ToList(), this.contextMenu, card_OpenRequested);
-				}
+				var deals = this.rows.Where(r => r.StageId == stage.Id).ToList();
+				// the board shows the card count in the column's badge.
+				column.Text = stage.Name + " · " + Fmt.MoneyShort(deals.Sum(d => d.Amount))
+					+ (stage.IsWon || stage.IsLost ? "" : " · " + stage.Probability + "%");
 			}
-			finally
-			{
-				this.flowBoard.ResumeLayout();
-			}
-			FitColumns();
-			this.flowBoard.HorizontalScroll.Value = scroll;
+			this.kanbanBoard.Update();
 		}
 
-		// the columns fill the height of the board.
+		private static string StatusOf(StageItem stage) => stage.Id.ToString(CultureInfo.InvariantCulture);
+
+		private StageItem StageOf(KanbanColumn column) => column == null ? null : this.stages.FirstOrDefault(s => StatusOf(s) == column.Value);
+
+		// lanes: at least MinLaneWidth wide; as many whole lanes as fit fill the width, the board scrolls for the others.
+		private const int MinLaneWidth = 220;
+		private const int LaneGap = 16;
+
 		private void FitColumns()
 		{
-			var height = this.flowBoard.ClientSize.Height - this.flowBoard.Padding.Vertical - 4;
-			foreach (Control column in this.flowBoard.Controls)
-				column.Height = Math.Max(200, height);
+			var lanes = Math.Max(1, this.kanbanBoard.Columns.Count);
+			var visible = Math.Max(1, Math.Min(lanes, (this.kanbanBoard.Width + LaneGap) / (MinLaneWidth + LaneGap)));
+			this.kanbanBoard.ColumnWidth = Math.Max(MinLaneWidth, (this.kanbanBoard.Width - (visible - 1) * LaneGap) / visible - 1);
 		}
 
 		private void SetMode(bool list)
@@ -223,17 +228,16 @@ namespace RelayCrm.Views
 			this.buttonList.Pushed = list;
 			this.buttonBoard.Pushed = !list;
 			this.panelList.Visible = list;
-			this.flowBoard.Visible = !list;
+			this.kanbanBoard.Visible = !list;
 		}
 
 		/// <summary>
 		/// Moves a deal to a stage, before another card or at the end; moving to a lost stage asks why.
 		/// </summary>
-		private void MoveDeal(DealRow row, StageItem stage, DealRow before)
+		private void MoveDeal(DealRow row, StageItem stage, DealRow before, string reason = null)
 		{
 			var stageChanged = row.StageId != stage.Id;
-			string reason = null;
-			if (stageChanged && stage.IsLost)
+			if (stageChanged && stage.IsLost && reason == null)
 			{
 				// cancelling the question cancels the move.
 				reason = LostReasonDialog.Ask(row.Title);
@@ -268,12 +272,9 @@ namespace RelayCrm.Views
 		/// <summary>The deal the context menu was opened on: a card of the board or the current row of the list.</summary>
 		private DealRow MenuDeal()
 		{
-			// a right click on a label of a card: the card is its parent.
-			var source = this.contextMenu.SourceControl;
-			while (source != null && !(source is DealCard))
-				source = source.Parent;
-			if (source is DealCard card)
-				return card.Deal;
+			// on the board: the card clicked last.
+			if (this.contextMenu.SourceControl == this.kanbanBoard)
+				return this.boardDeal;
 			if (this.contextMenu.SourceControl == this.dataGridView)
 				return GridHelper.Current<DealRow>(this.dataGridView);
 			return null;
@@ -321,6 +322,11 @@ namespace RelayCrm.Views
 			}
 		}
 
+		private void emptyState_ActionClick(object sender, EventArgs e)
+		{
+			linkClear_LinkClicked(sender, null);
+		}
+
 		private void linkClear_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			this.loading = true;
@@ -340,23 +346,45 @@ namespace RelayCrm.Views
 			LoadData();
 		}
 
-		private void stageColumn_CardDropped(object sender, CardDroppedEventArgs e)
+		private void kanbanBoard_CardMoving(object sender, KanbanCardMoveEventArgs e)
 		{
-			var stage = ((StageColumn)sender).Stage;
-			if (stage == null || e.Deal == null || e.Before?.Id == e.Deal.Id)
+			this.pendingLostReason = null;
+			var stage = StageOf(e.Column);
+			if (!(e.Item is DealRow row) || stage == null || e.Column == e.OldColumn || !stage.IsLost)
 				return;
 
-			// BeginInvoke: the drag and drop operation ends before a dialog (lost reason) can open.
-			BeginInvoke(new Action(() => MoveDeal(e.Deal, stage, e.Before)));
+			// dropping on Lost asks why; cancelling the question cancels the move.
+			this.pendingLostReason = LostReasonDialog.Ask(row.Title);
+			e.Cancel = this.pendingLostReason == null;
 		}
 
-		private void card_OpenRequested(object sender, EventArgs e)
+		private void kanbanBoard_CardMoved(object sender, KanbanCardMoveEventArgs e)
 		{
-			if (sender is DealCard card && card.Deal != null)
-				OpenDeal(card.Deal.Id);
+			var stage = StageOf(e.Column);
+			if (!(e.Item is DealRow row) || stage == null)
+				return;
+
+			// the card the moved one is placed before (the board rewrote BoardOrder), or the end of the column.
+			var status = StatusOf(stage);
+			var before = this.rows.Where(r => r != row && r.Status == status && r.BoardOrder > row.BoardOrder)
+				.OrderBy(r => r.BoardOrder).FirstOrDefault();
+			var reason = this.pendingLostReason;
+			this.pendingLostReason = null;
+			MoveDeal(row, stage, before, reason);
 		}
 
-		private void flowBoard_Resize(object sender, EventArgs e)
+		private void kanbanBoard_CardClick(object sender, KanbanCardEventArgs e)
+		{
+			this.boardDeal = e.Item as DealRow;
+		}
+
+		private void kanbanBoard_CardDoubleClick(object sender, KanbanCardEventArgs e)
+		{
+			if (e.Item is DealRow row)
+				OpenDeal(row.Id);
+		}
+
+		private void kanbanBoard_Resize(object sender, EventArgs e)
 		{
 			FitColumns();
 		}
@@ -366,21 +394,6 @@ namespace RelayCrm.Views
 			var row = GridHelper.RowAt<DealRow>(this.dataGridView, e.RowIndex);
 			if (row != null)
 				OpenDeal(row.Id);
-		}
-
-		private void dataGridView_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-		{
-			var row = GridHelper.RowAt<DealRow>(this.dataGridView, e.RowIndex);
-			if (row == null)
-				return;
-
-			if (e.ColumnIndex == this.colStage.Index)
-				e.CellStyle.ForeColor = ToneExtensions.DealStageTone(row.IsWon, row.IsLost).ToColor();
-			else if (e.ColumnIndex == this.colCloseTag.Index)
-			{
-				var tone = ToneExtensions.ParseTone(row.CloseTone);
-				e.CellStyle.ForeColor = tone == Tone.Neutral ? System.Drawing.SystemColors.GrayText : tone.ToColor();
-			}
 		}
 
 		private void dataGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)

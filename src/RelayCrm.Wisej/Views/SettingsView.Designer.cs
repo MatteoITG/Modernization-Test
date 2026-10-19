@@ -29,7 +29,6 @@ namespace RelayCrm.Views
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle1 = new Wisej.Web.DataGridViewCellStyle();
 			Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle2 = new Wisej.Web.DataGridViewCellStyle();
 			Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle3 = new Wisej.Web.DataGridViewCellStyle();
 			Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle4 = new Wisej.Web.DataGridViewCellStyle();
@@ -57,13 +56,12 @@ namespace RelayCrm.Views
 			this.labelProfileRole = new Wisej.Web.Label();
 			this.buttonSaveProfile = new Wisej.Web.Button();
 			this.groupPreview = new Wisej.Web.GroupBox();
-			this.pictureProfile = new Wisej.Web.PictureBox();
+			this.avatarProfile = new Wisej.Web.Avatar();
 			this.labelPreviewName = new Wisej.Web.Label();
 			this.labelPreviewEmail = new Wisej.Web.Label();
 			this.tabUsers = new Wisej.Web.TabPage();
 			this.dataGridUsers = new Wisej.Web.DataGridView();
-			this.colUserAvatar = new Wisej.Web.DataGridViewImageColumn();
-			this.colUserName = new Wisej.Web.DataGridViewTextBoxColumn();
+			this.colUserName = new Wisej.Web.DataGridViewAvatarColumn();
 			this.colUserEmail = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colUserRole = new Wisej.Web.DataGridViewComboBoxColumn();
 			this.colUserActive = new Wisej.Web.DataGridViewCheckBoxColumn();
@@ -87,7 +85,7 @@ namespace RelayCrm.Views
 			this.labelStagesHint = new Wisej.Web.ToolBarButton();
 			this.tabTags = new Wisej.Web.TabPage();
 			this.dataGridTags = new Wisej.Web.DataGridView();
-			this.colTagName = new Wisej.Web.DataGridViewTextBoxColumn();
+			this.colTagName = new Wisej.Web.DataGridViewChipColumn();
 			this.colTagUsage = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colTagCount = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.tagsStrip = new Wisej.Web.ToolBar();
@@ -108,7 +106,6 @@ namespace RelayCrm.Views
 			this.tabControl.SuspendLayout();
 			this.tabProfile.SuspendLayout();
 			this.groupPreview.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureProfile)).BeginInit();
 			this.tabUsers.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridUsers)).BeginInit();
 			this.usersStrip.SuspendLayout();
@@ -317,10 +314,11 @@ namespace RelayCrm.Views
 			this.buttonSaveProfile.TabIndex = 12;
 			this.buttonSaveProfile.Text = "&Save";
 			this.buttonSaveProfile.Click += new System.EventHandler(this.buttonSaveProfile_Click);
+			this.buttonSaveProfile.CssClass = "relay-primary";
 			//
 			// groupPreview
 			//
-			this.groupPreview.Controls.Add(this.pictureProfile);
+			this.groupPreview.Controls.Add(this.avatarProfile);
 			this.groupPreview.Controls.Add(this.labelPreviewName);
 			this.groupPreview.Controls.Add(this.labelPreviewEmail);
 			this.groupPreview.Location = new System.Drawing.Point(440, 64);
@@ -329,15 +327,15 @@ namespace RelayCrm.Views
 			this.groupPreview.TabIndex = 13;
 			this.groupPreview.TabStop = false;
 			this.groupPreview.Text = "Preview";
+			this.groupPreview.CssClass = "relay-card";
 			//
-			// pictureProfile
+			// avatarProfile
 			//
-			this.pictureProfile.Location = new System.Drawing.Point(12, 24);
-			this.pictureProfile.Name = "pictureProfile";
-			this.pictureProfile.Size = new System.Drawing.Size(56, 56);
-			this.pictureProfile.SizeMode = Wisej.Web.PictureBoxSizeMode.Zoom;
-			this.pictureProfile.TabIndex = 0;
-			this.pictureProfile.TabStop = false;
+			this.avatarProfile.AvatarSize = 56;
+			this.avatarProfile.Location = new System.Drawing.Point(12, 24);
+			this.avatarProfile.Name = "avatarProfile";
+			this.avatarProfile.Size = new System.Drawing.Size(56, 56);
+			this.avatarProfile.TabIndex = 1;
 			//
 			// labelPreviewName
 			//
@@ -371,7 +369,6 @@ namespace RelayCrm.Views
 			// dataGridUsers
 			//
 			this.dataGridUsers.Columns.AddRange(new Wisej.Web.DataGridViewColumn[] {
-			this.colUserAvatar,
 			this.colUserName,
 			this.colUserEmail,
 			this.colUserRole,
@@ -394,23 +391,19 @@ namespace RelayCrm.Views
 			this.dataGridUsers.CellFormatting += new Wisej.Web.DataGridViewCellFormattingEventHandler(this.dataGridUsers_CellFormatting);
 			this.dataGridUsers.CellValueChanged += new Wisej.Web.DataGridViewCellEventHandler(this.dataGridUsers_CellValueChanged);
 			this.dataGridUsers.DataError += new Wisej.Web.DataGridViewDataErrorEventHandler(this.grid_DataError);
-			//
-			// colUserAvatar
-			//
-			this.colUserAvatar.HeaderText = "";
-			this.colUserAvatar.Name = "colUserAvatar";
-			this.colUserAvatar.ReadOnly = true;
-			this.colUserAvatar.Width = 36;
+			this.dataGridUsers.BorderStyle = Wisej.Web.BorderStyle.None;
+			this.dataGridUsers.CssClass = "relay-grid";
+			this.dataGridUsers.RowTemplate.Height = 40;
 			//
 			// colUserName
 			//
-			dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.colUserName.DataPropertyName = "Name";
-			this.colUserName.DefaultCellStyle = dataGridViewCellStyle1;
 			this.colUserName.HeaderText = "Name";
 			this.colUserName.Name = "colUserName";
 			this.colUserName.ReadOnly = true;
-			this.colUserName.Width = 170;
+			this.colUserName.Width = 200;
+			this.colUserName.ImageMember = "AvatarImage";
+			this.colUserName.TextMember = "Name";
 			//
 			// colUserEmail
 			//
@@ -460,6 +453,7 @@ namespace RelayCrm.Views
 			this.usersStrip.TabIndex = 0;
 			this.usersStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
 			this.usersStrip.BackColor = System.Drawing.SystemColors.Window;
+			this.usersStrip.CssClass = "relay-toolbar";
 			//
 			// buttonInvite
 			//
@@ -516,6 +510,9 @@ namespace RelayCrm.Views
 			this.dataGridStages.CellValueChanged += new Wisej.Web.DataGridViewCellEventHandler(this.dataGridStages_CellValueChanged);
 			this.dataGridStages.CurrentCellChanged += new System.EventHandler(this.dataGridStages_CurrentCellChanged);
 			this.dataGridStages.DataError += new Wisej.Web.DataGridViewDataErrorEventHandler(this.grid_DataError);
+			this.dataGridStages.BorderStyle = Wisej.Web.BorderStyle.None;
+			this.dataGridStages.CssClass = "relay-grid";
+			this.dataGridStages.RowTemplate.Height = 40;
 			//
 			// colStageOrder
 			//
@@ -577,6 +574,7 @@ namespace RelayCrm.Views
 			this.stagesStrip.TabIndex = 0;
 			this.stagesStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
 			this.stagesStrip.BackColor = System.Drawing.SystemColors.Window;
+			this.stagesStrip.CssClass = "relay-toolbar";
 			//
 			// buttonMoveUp
 			//
@@ -640,15 +638,17 @@ namespace RelayCrm.Views
 			this.dataGridTags.TabIndex = 1;
 			this.dataGridTags.CellFormatting += new Wisej.Web.DataGridViewCellFormattingEventHandler(this.dataGridTags_CellFormatting);
 			this.dataGridTags.KeyDown += new Wisej.Web.KeyEventHandler(this.dataGridTags_KeyDown);
+			this.dataGridTags.BorderStyle = Wisej.Web.BorderStyle.None;
+			this.dataGridTags.CssClass = "relay-grid";
+			this.dataGridTags.RowTemplate.Height = 40;
 			//
 			// colTagName
 			//
-			dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.colTagName.DataPropertyName = "Name";
-			this.colTagName.DefaultCellStyle = dataGridViewCellStyle5;
 			this.colTagName.HeaderText = "Tag";
 			this.colTagName.Name = "colTagName";
 			this.colTagName.Width = 200;
+			this.colTagName.Variant = Wisej.Web.ChipVariant.Soft;
 			//
 			// colTagUsage
 			//
@@ -684,6 +684,7 @@ namespace RelayCrm.Views
 			this.tagsStrip.TabIndex = 0;
 			this.tagsStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
 			this.tagsStrip.BackColor = System.Drawing.SystemColors.Window;
+			this.tagsStrip.CssClass = "relay-toolbar";
 			//
 			// labelNewTag
 			//
@@ -775,13 +776,14 @@ namespace RelayCrm.Views
 			this.buttonResetDemo.TabIndex = 4;
 			this.buttonResetDemo.Text = "&Reset demo data...";
 			this.buttonResetDemo.Click += new System.EventHandler(this.buttonResetDemo_Click);
+			this.buttonResetDemo.CssClass = "relay-secondary";
 			//
 			// SettingsView
 			//
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.Color.White;
 			this.Controls.Add(this.tabControl);
 			this.Controls.Add(this.labelSubtitle);
+			this.CssClass = "relay-card";
 			this.Name = "SettingsView";
 			this.Size = new System.Drawing.Size(1000, 600);
 			this.Load += new System.EventHandler(this.SettingsView_Load);
@@ -802,7 +804,6 @@ namespace RelayCrm.Views
 			((System.ComponentModel.ISupportInitialize)(this.dataGridUsers)).EndInit();
 			this.tabUsers.ResumeLayout(false);
 			this.tabUsers.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureProfile)).EndInit();
 			this.groupPreview.ResumeLayout(false);
 			this.groupPreview.PerformLayout();
 			this.tabProfile.ResumeLayout(false);
@@ -838,13 +839,12 @@ namespace RelayCrm.Views
 		private Wisej.Web.Label labelProfileRole;
 		private Wisej.Web.Button buttonSaveProfile;
 		private Wisej.Web.GroupBox groupPreview;
-		private Wisej.Web.PictureBox pictureProfile;
+		private Wisej.Web.Avatar avatarProfile;
 		private Wisej.Web.Label labelPreviewName;
 		private Wisej.Web.Label labelPreviewEmail;
 		private Wisej.Web.TabPage tabUsers;
 		private Wisej.Web.DataGridView dataGridUsers;
-		private Wisej.Web.DataGridViewImageColumn colUserAvatar;
-		private Wisej.Web.DataGridViewTextBoxColumn colUserName;
+		private Wisej.Web.DataGridViewAvatarColumn colUserName;
 		private Wisej.Web.DataGridViewTextBoxColumn colUserEmail;
 		private Wisej.Web.DataGridViewComboBoxColumn colUserRole;
 		private Wisej.Web.DataGridViewCheckBoxColumn colUserActive;
@@ -868,7 +868,7 @@ namespace RelayCrm.Views
 		private Wisej.Web.ToolBarButton labelStagesHint;
 		private Wisej.Web.TabPage tabTags;
 		private Wisej.Web.DataGridView dataGridTags;
-		private Wisej.Web.DataGridViewTextBoxColumn colTagName;
+		private Wisej.Web.DataGridViewChipColumn colTagName;
 		private Wisej.Web.DataGridViewTextBoxColumn colTagUsage;
 		private Wisej.Web.DataGridViewTextBoxColumn colTagCount;
 		private Wisej.Web.ToolBar tagsStrip;

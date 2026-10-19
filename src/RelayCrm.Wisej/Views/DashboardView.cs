@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.Linq;
 using Wisej.Web;
 using RelayCrm.Data;
@@ -26,18 +25,83 @@ namespace RelayCrm.Views
 			this.gridAccounts.AutoGenerateColumns = false;
 			this.gridClosing.DefaultCellStyle.FormatProvider = Fmt.Culture;
 			this.gridAccounts.DefaultCellStyle.FormatProvider = Fmt.Culture;
-			IconImages.Apply(this.toolStrip);
-			this.listViewTasks.SmallImageList = IconImages.List(16, "check2-square", "exclamation-circle");
-			this.listViewActivity.SmallImageList = IconImages.List(16, "telephone", "envelope", "people", "sticky");
-
-			this.comboPeriod.Items.AddRange(new object[] { "This month", "Quarter", "Year" });
-			this.comboPeriod.SelectedIndex = 0;
+			// the task cards show these properties of DashboardTask.
+			this.listTasks.DisplayMembers.Title = "Title";
+			this.listTasks.DisplayMembers.Description = "Description";
+			this.listTasks.DisplayMembers.Meta = "Meta";
+			this.listTasks.DisplayMembers.Icon = "Icon";
+			this.listTasks.DisplayMembers.IconTone = "IconTone";
+			this.listTasks.DisplayMembers.Badge = "Badge";
+			this.listTasks.DisplayMembers.BadgeTone = "BadgeTone";
 
 			ConfigureCharts();
+			Reflow(Application.ActiveProfile?.Name);
 		}
 
+		#region Responsive layout
+
+		/// <summary>
+		/// Rearranges the cards for the client profile (ClientProfiles.json): four KPI tiles and three charts in a row on a
+		/// desktop, two by two and one chart per row on a tablet, one card per row on a phone.
+		/// </summary>
+		/// <remarks>The cells of a TableLayoutPanel are extender properties that the responsive profiles of the designer cannot hold.</remarks>
+		protected override void OnResponsiveProfileChanged(ResponsiveProfileChangedEventArgs e)
+		{
+			base.OnResponsiveProfileChanged(e);
+			Reflow(e.CurrentProfile?.Name);
+		}
+
+		private void Reflow(string profile)
+		{
+			var phone = profile == "Phone";
+			var tablet = profile == "Tablet";
+
+			// the header: on a phone the period selector goes under the greeting.
+			this.panelHeader.Height = phone ? 100 : 56;
+			this.labelGreeting.Dock = phone ? DockStyle.Top : DockStyle.Left;
+			this.segmentedPeriod.Dock = phone ? DockStyle.Bottom : DockStyle.Right;
+			this.segmentedPeriod.Padding = phone ? new Padding(0, 2, 44, 2) : new Padding(12, 2, 0, 2);
+			this.labelPeriod.Visible = !phone;
+			var heights = new[]
+			{
+				Arrange(this.tableKpis, phone ? 1 : tablet ? 2 : 4, 170),
+				Arrange(this.tableCharts, phone || tablet ? 1 : 3, 360),
+				Arrange(this.tableLists, phone ? 1 : 2, 320),
+				Arrange(this.tableGrids, phone ? 1 : 2, 320),
+			};
+
+			this.tableMain.SuspendLayout();
+			for (var i = 0; i < heights.Length; i++)
+				this.tableMain.RowStyles[i] = new RowStyle(SizeType.Absolute, heights[i]);
+			this.tableMain.ResumeLayout();
+			this.panelScroll.AutoScrollMinSize = new System.Drawing.Size(phone ? 320 : 900, heights.Sum() + this.tableMain.Padding.Vertical);
+		}
+
+		// puts the cards of a table in <paramref name="columns"/> columns; returns the height of the table.
+		private static int Arrange(TableLayoutPanel table, int columns, int rowHeight)
+		{
+			var cards = table.Controls.Cast<Control>().OrderBy(c => table.GetColumn(c) + table.GetRow(c) * 10).ToList();
+			var rows = (cards.Count + columns - 1) / columns;
+
+			table.SuspendLayout();
+			table.ColumnStyles.Clear();
+			table.RowStyles.Clear();
+			table.ColumnCount = columns;
+			table.RowCount = rows;
+			for (var c = 0; c < columns; c++)
+				table.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / columns));
+			for (var r = 0; r < rows; r++)
+				table.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / rows));
+			for (var i = 0; i < cards.Count; i++)
+				table.SetCellPosition(cards[i], new TableLayoutPanelCellPosition(i % columns, i / columns));
+			table.ResumeLayout();
+			return rows * rowHeight;
+		}
+
+		#endregion
+
 		/// <summary>Period shown by the dashboard.</summary>
-		private DashboardPeriod Period => (DashboardPeriod)Math.Max(0, this.comboPeriod.SelectedIndex);
+		private DashboardPeriod Period => (DashboardPeriod)Math.Max(0, this.segmentedPeriod.SelectedIndex);
 
 		/// <summary>Reloads every widget for the selected period.</summary>
 		public void RefreshData()
@@ -72,37 +136,24 @@ namespace RelayCrm.Views
 			ChartStyle.Apply(this.chartPipeline, ThousandsAxis);
 			ChartStyle.Apply(this.chartWon, ThousandsAxis);
 			ChartStyle.Apply(this.chartOwners, ThousandsAxis);
-
-			// sparklines: just the line, no axes.
-			foreach (var spark in new[] { this.chartSparkPipeline, this.chartSparkWon, this.chartSparkWinRate, this.chartSparkAverage })
-			{
-				spark.Cursor = Cursors.Hand;
-			}
 		}
 
 		private void ShowKpis()
 		{
-			Apply(this.labelKpiPipelineValue, this.labelKpiPipelineCaption, this.labelKpiPipelineTrend, this.chartSparkPipeline, this.data.OpenPipeline, false);
-			Apply(this.labelKpiWonValue, this.labelKpiWonCaption, this.labelKpiWonTrend, this.chartSparkWon, this.data.WonRevenue, true);
-			Apply(this.labelKpiWinRateValue, this.labelKpiWinRateCaption, this.labelKpiWinRateTrend, this.chartSparkWinRate, this.data.WinRate, false);
-			Apply(this.labelKpiAverageValue, this.labelKpiAverageCaption, this.labelKpiAverageTrend, this.chartSparkAverage, this.data.AverageDeal, false);
+			Apply(this.kpiPipeline, this.data.OpenPipeline, false);
+			Apply(this.kpiWon, this.data.WonRevenue, true);
+			Apply(this.kpiWinRate, this.data.WinRate, false);
+			Apply(this.kpiAverage, this.data.AverageDeal, false);
 		}
 
-		private static void Apply(Label value, Label caption, Label trend, Sparkline spark, DashboardKpi kpi, bool showTrend)
+		private static void Apply(KpiPanel panel, DashboardKpi kpi, bool showTrend)
 		{
-			value.Text = kpi.Value;
-			caption.Text = kpi.Caption;
+			panel.Value = kpi.Value;
+			panel.Caption = kpi.Caption;
+			panel.SparklineValues = kpi.Sparkline ?? new double[0];
 
 			// only won revenue shows the change versus the previous period.
-			trend.Visible = showTrend && kpi.Trend != null;
-			if (trend.Visible)
-			{
-				var t = kpi.Trend.Value;
-				trend.Text = (t > 0 ? "▲ +" : t < 0 ? "▼ " : "") + t.ToString("0.#", Fmt.Culture) + "%";
-				trend.ForeColor = t > 0 ? Tone.Success.ToColor() : t < 0 ? Tone.Danger.ToColor() : SystemColors.GrayText;
-			}
-
-			spark.Values = kpi.Sparkline ?? new double[0];
+			panel.Trend = showTrend ? kpi.Trend : null;
 		}
 
 		private void ShowPipeline()
@@ -150,48 +201,37 @@ namespace RelayCrm.Views
 
 		private void ShowTasks()
 		{
-			this.listViewTasks.BeginUpdate();
-			this.listViewTasks.Items.Clear();
-			foreach (var task in this.data.MyTasks)
-			{
-				var item = new ListViewItem(task.Title, Icons.NameOf(task.Icon)) { Tag = task };
-				item.SubItems.Add(task.Description);
-				item.SubItems.Add(task.Meta, task.IconTone == Tone.Danger ? Tone.Danger.ToColor() : this.listViewTasks.ForeColor, item.BackColor, item.Font);
-				item.SubItems.Add(task.Badge ?? "", task.BadgeTone.ToColor(), item.BackColor, item.Font);
-				this.listViewTasks.Items.Add(item);
-			}
-			this.listViewTasks.EndUpdate();
-			this.labelNoTasks.Visible = this.data.MyTasks.Count == 0;
+			this.listTasks.DataSource = this.data.MyTasks;
+			this.emptyTasks.Visible = this.data.MyTasks.Count == 0;
 			this.groupTasks.Text = this.data.MyTasks.Count == 0 ? "My tasks today" : "My tasks today (" + this.data.MyTasks.Count + ")";
 		}
 
 		private void ShowActivity()
 		{
-			this.listViewActivity.BeginUpdate();
-			this.listViewActivity.Items.Clear();
+			this.timelineActivity.Items.Clear();
 			foreach (var a in this.data.RecentActivity)
 			{
-				var item = new ListViewItem(Fmt.Relative(a.Date) + ", " + a.Date.ToString("HH:mm", Fmt.Culture), Icons.NameOf(ActivityLogService.Icon(a.Type)))
+				this.timelineActivity.Items.Add(new TimelineItem
 				{
+					Time = a.Date,
+					Title = a.Subject,
+					Description = a.Type + (string.IsNullOrEmpty(a.Description) ? "" : " · " + a.Description),
+					Icon = ActivityLogService.Icon(a.Type),
+					Tone = a.Type == ActivityType.Meeting ? TimelineTone.Primary : TimelineTone.Neutral,
 					Tag = a,
-					ToolTipText = a.Type + " · " + Fmt.DateAndTime(a.Date),
-				};
-				item.SubItems.Add(a.Subject);
-				item.SubItems.Add(a.Description);
-				this.listViewActivity.Items.Add(item);
+				});
 			}
-			this.listViewActivity.EndUpdate();
-			this.labelNoActivity.Visible = this.data.RecentActivity.Count == 0;
+			this.emptyActivity.Visible = this.data.RecentActivity.Count == 0;
 		}
 
 		private void ShowGrids()
 		{
 			this.gridClosing.DataSource = this.data.ClosingSoon;
-			this.labelNoClosing.Visible = this.data.ClosingSoon.Count == 0;
+			this.emptyClosing.Visible = this.data.ClosingSoon.Count == 0;
 
 			this.groupAccounts.Text = "Top accounts · " + this.data.PeriodName;
 			this.gridAccounts.DataSource = this.data.TopAccounts;
-			this.labelNoAccounts.Visible = this.data.TopAccounts.Count == 0;
+			this.emptyAccounts.Visible = this.data.TopAccounts.Count == 0;
 		}
 
 		/// <summary>Deals of the current user only, for Sales.</summary>
@@ -199,26 +239,17 @@ namespace RelayCrm.Views
 
 		#region Drill-downs
 
-		/// <summary>The KPI box a click came from (the box itself, a label or its sparkline).</summary>
-		private GroupBox KpiOf(object sender)
-		{
-			var control = sender as Control;
-			while (control != null && !(control is GroupBox))
-				control = control.Parent;
-			return control as GroupBox;
-		}
-
 		private void kpi_Click(object sender, EventArgs e)
 		{
 			if (this.data == null)
 				return;
 
-			var box = KpiOf(sender);
-			if (box == this.groupKpiPipeline)
+			var box = sender;
+			if (box == this.kpiPipeline)
 			{
 				Navigator.OpenDeals(new DealFilter { OpenOnly = true, OwnerId = ScopeOwner, Caption = "Open pipeline" });
 			}
-			else if (box == this.groupKpiWon || box == this.groupKpiAverage)
+			else if (box == this.kpiWon || box == this.kpiAverage)
 			{
 				Navigator.OpenDeals(new DealFilter
 				{
@@ -229,7 +260,7 @@ namespace RelayCrm.Views
 					Caption = "Won in " + this.data.PeriodName,
 				});
 			}
-			else if (box == this.groupKpiWinRate)
+			else if (box == this.kpiWinRate)
 			{
 				Navigator.OpenDeals(new DealFilter
 				{
@@ -241,7 +272,7 @@ namespace RelayCrm.Views
 			}
 		}
 
-		private void chart_MouseClick(object sender, SeriesPointEventArgs e)
+		private void chart_PointClick(object sender, SeriesPointEventArgs e)
 		{
 			var point = e.Point;
 			var seriesIndex = e.SeriesIndex;
@@ -284,9 +315,9 @@ namespace RelayCrm.Views
 			}
 		}
 
-		private void listViewTasks_ItemActivate(object sender, EventArgs e)
+		private void listTasks_ItemClick(object sender, ActionCardListItemEventArgs e)
 		{
-			if (this.listViewTasks.SelectedItems.Count == 0 || !(this.listViewTasks.SelectedItems[0].Tag is DashboardTask task))
+			if (!(e.DataItem is DashboardTask task))
 				return;
 
 			if (TaskEditDialog.Edit(task.Id))
@@ -296,9 +327,9 @@ namespace RelayCrm.Views
 			}
 		}
 
-		private void listViewActivity_ItemActivate(object sender, EventArgs e)
+		private void timelineActivity_ItemClick(object sender, TimelineItemEventArgs e)
 		{
-			if (this.listViewActivity.SelectedItems.Count == 0 || !(this.listViewActivity.SelectedItems[0].Tag is DashboardActivity entry))
+			if (!(e.Item?.Tag is DashboardActivity entry))
 				return;
 
 			if (entry.DealId != null)
@@ -350,7 +381,7 @@ namespace RelayCrm.Views
 			RefreshData();
 		}
 
-		private void comboPeriod_SelectedIndexChanged(object sender, EventArgs e)
+		private void segmentedPeriod_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			if (this.data != null)
 				RefreshData();

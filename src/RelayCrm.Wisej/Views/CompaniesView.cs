@@ -34,7 +34,6 @@ namespace RelayCrm.Views
 			this.grid.AutoGenerateColumns = false;
 			this.grid.DefaultCellStyle.FormatProvider = Fmt.Culture;
 			IconImages.Apply(this.toolStrip);
-			this.textSearch.Watermark = "Name, industry, place, owner or tag";
 		}
 
 		/// <summary>
@@ -75,10 +74,6 @@ namespace RelayCrm.Views
 
 		#region Filtering and paging
 
-		private ToolBarButton[] QuickButtons => new[] { this.quickAll, this.quickMine, this.quickOpenDeals, this.quickCustomers };
-
-		private static readonly string[] QuickTexts = { "All", "My companies", "With open deals", "Customers" };
-
 		private void ApplyFilters(bool keepPage = false)
 		{
 			var search = this.textSearch.Text.Trim();
@@ -93,12 +88,10 @@ namespace RelayCrm.Views
 
 			// counts of the quick filters over the searched rows.
 			var searched = query.ToList();
-			var buttons = this.QuickButtons;
-			for (int i = 0; i < buttons.Length; i++)
-			{
-				buttons[i].Text = QuickTexts[i] + " (" + CompanyService.Apply(searched, (CompanyQuickFilter)i, CurrentUser.Id).Count() + ")";
-				buttons[i].Pushed = (int)this.quickFilter == i;
-			}
+			var segments = this.segmentedQuick.Items;
+			for (int i = 0; i < segments.Count; i++)
+				segments[i].Count = CompanyService.Apply(searched, (CompanyQuickFilter)i, CurrentUser.Id).Count();
+			this.segmentedQuick.SelectedIndex = (int)this.quickFilter;
 
 			this.filtered = CompanyService.Apply(searched, this.quickFilter, CurrentUser.Id).ToList();
 			SortFiltered();
@@ -148,7 +141,7 @@ namespace RelayCrm.Views
 			this.buttonPrevious.Enabled = this.pageIndex > 0;
 			this.buttonNext.Enabled = this.pageIndex < this.PageCount - 1;
 
-			GridHelper.ShowEmpty(this.linkEmpty, this.filtered.Count == 0,
+			GridHelper.ShowEmpty(this.emptyState, this.filtered.Count == 0,
 				this.rows.Count == 0 ? "No companies yet." : "No companies match the search and the filters.",
 				this.rows.Count == 0 ? null : "Clear the filters");
 			UpdateButtons();
@@ -204,9 +197,17 @@ namespace RelayCrm.Views
 			ApplyFilters();
 		}
 
-		private void quickFilter_Click(object sender, EventArgs e)
+		private void textSearch_ToolClick(object sender, ToolClickEventArgs e)
 		{
-			this.quickFilter = (CompanyQuickFilter)Array.IndexOf(this.QuickButtons, sender);
+			this.textSearch.Text = "";
+		}
+
+		private void segmentedQuick_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (this.segmentedQuick.SelectedIndex < 0 || this.segmentedQuick.SelectedIndex == (int)this.quickFilter)
+				return;
+
+			this.quickFilter = (CompanyQuickFilter)this.segmentedQuick.SelectedIndex;
 			ApplyFilters();
 		}
 
@@ -225,7 +226,7 @@ namespace RelayCrm.Views
 			ClearFilters();
 		}
 
-		private void linkEmpty_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		private void emptyState_ActionClick(object sender, EventArgs e)
 		{
 			ClearFilters();
 		}
@@ -282,10 +283,6 @@ namespace RelayCrm.Views
 			{
 				if (e.Value is decimal amount && amount == 0)
 					e.CellStyle.ForeColor = System.Drawing.SystemColors.GrayText;
-			}
-			else if (e.ColumnIndex == this.colTag.Index)
-			{
-				e.CellStyle.ForeColor = Tone.Primary.ToColor();
 			}
 		}
 

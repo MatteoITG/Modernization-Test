@@ -125,6 +125,7 @@ namespace RelayCrm.Dialogs
 			//
 			this.buttonSignIn.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Bottom | Wisej.Web.AnchorStyles.Right)));
 			this.buttonSignIn.Location = new System.Drawing.Point(326, 356);
+			this.buttonSignIn.CssClass = "relay-primary";
 			this.buttonSignIn.Name = "buttonSignIn";
 			this.buttonSignIn.Size = new System.Drawing.Size(88, 27);
 			this.buttonSignIn.TabIndex = 5;
@@ -136,6 +137,7 @@ namespace RelayCrm.Dialogs
 			this.buttonExit.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Bottom | Wisej.Web.AnchorStyles.Right)));
 			this.buttonExit.DialogResult = Wisej.Web.DialogResult.Cancel;
 			this.buttonExit.Location = new System.Drawing.Point(422, 356);
+			this.buttonExit.CssClass = "relay-secondary";
 			this.buttonExit.Name = "buttonExit";
 			this.buttonExit.Size = new System.Drawing.Size(88, 27);
 			this.buttonExit.TabIndex = 6;

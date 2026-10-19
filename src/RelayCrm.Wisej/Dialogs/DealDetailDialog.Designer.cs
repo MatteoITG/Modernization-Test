@@ -29,9 +29,9 @@ namespace RelayCrm.Dialogs
 		private void InitializeComponent()
 		{
 			this.panelHeader = new Wisej.Web.Panel();
-			this.labelStages = new Wisej.Web.Label();
+			this.stepperStages = new Wisej.Web.Stepper();
 			this.labelOwner = new Wisej.Web.Label();
-			this.labelStage = new Wisej.Web.Label();
+			this.chipStage = new Wisej.Web.ChipLabel();
 			this.labelAmount = new Wisej.Web.Label();
 			this.linkCompany = new Wisej.Web.LinkLabel();
 			this.labelTitle = new Wisej.Web.Label();
@@ -65,12 +65,7 @@ namespace RelayCrm.Dialogs
 			this.labelLostValue = new Wisej.Web.Label();
 			this.tabControl = new Wisej.Web.TabControl();
 			this.tabPageActivity = new Wisej.Web.TabPage();
-			this.listViewActivity = new Wisej.Web.ListView();
-			this.columnActivityDate = new Wisej.Web.ColumnHeader();
-			this.columnActivityType = new Wisej.Web.ColumnHeader();
-			this.columnActivitySubject = new Wisej.Web.ColumnHeader();
-			this.columnActivityUser = new Wisej.Web.ColumnHeader();
-			this.columnActivityNotes = new Wisej.Web.ColumnHeader();
+			this.timelineActivity = new Wisej.Web.Timeline();
 			this.tabPageTasks = new Wisej.Web.TabPage();
 			this.listViewTasks = new Wisej.Web.ListView();
 			this.columnTaskTitle = new Wisej.Web.ColumnHeader();
@@ -96,31 +91,26 @@ namespace RelayCrm.Dialogs
 			//
 			// panelHeader
 			//
-			this.panelHeader.Controls.Add(this.labelStages);
+			this.panelHeader.Controls.Add(this.stepperStages);
 			this.panelHeader.Controls.Add(this.labelOwner);
-			this.panelHeader.Controls.Add(this.labelStage);
+			this.panelHeader.Controls.Add(this.chipStage);
 			this.panelHeader.Controls.Add(this.labelAmount);
 			this.panelHeader.Controls.Add(this.linkCompany);
 			this.panelHeader.Controls.Add(this.labelTitle);
 			this.panelHeader.Dock = Wisej.Web.DockStyle.Top;
 			this.panelHeader.Location = new System.Drawing.Point(0, 0);
 			this.panelHeader.Name = "panelHeader";
-			this.panelHeader.Size = new System.Drawing.Size(844, 100);
+			this.panelHeader.Size = new System.Drawing.Size(844, 140);
 			this.panelHeader.TabIndex = 0;
 			//
-			// labelStages
+			// stepperStages
 			//
-			this.labelStages.Anchor = ((Wisej.Web.AnchorStyles)(((Wisej.Web.AnchorStyles.Top | Wisej.Web.AnchorStyles.Left)
+			this.stepperStages.Anchor = ((Wisej.Web.AnchorStyles)(((Wisej.Web.AnchorStyles.Top | Wisej.Web.AnchorStyles.Left)
 			| Wisej.Web.AnchorStyles.Right)));
-			this.labelStages.AutoEllipsis = true;
-			this.labelStages.BorderStyle = Wisej.Web.BorderStyle.Solid;
-			this.labelStages.Location = new System.Drawing.Point(12, 68);
-			this.labelStages.Name = "labelStages";
-			this.labelStages.Padding = new Wisej.Web.Padding(4, 0, 4, 0);
-			this.labelStages.Size = new System.Drawing.Size(820, 24);
-			this.labelStages.TabIndex = 5;
-			this.labelStages.Text = "Stages";
-			this.labelStages.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.stepperStages.Location = new System.Drawing.Point(12, 68);
+			this.stepperStages.Name = "stepperStages";
+			this.stepperStages.Size = new System.Drawing.Size(820, 64);
+			this.stepperStages.TabIndex = 5;
 			//
 			// labelOwner
 			//
@@ -132,15 +122,15 @@ namespace RelayCrm.Dialogs
 			this.labelOwner.Text = "Owner";
 			this.labelOwner.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			//
-			// labelStage
+			// chipStage
 			//
-			this.labelStage.AutoSize = true;
-			this.labelStage.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-			this.labelStage.Location = new System.Drawing.Point(14, 44);
-			this.labelStage.Name = "labelStage";
-			this.labelStage.Size = new System.Drawing.Size(39, 15);
-			this.labelStage.TabIndex = 2;
-			this.labelStage.Text = "Stage";
+			this.chipStage.ChipSize = Wisej.Web.ChipSize.Small;
+			this.chipStage.Margin = new Wisej.Web.Padding(0, 0, 6, 0);
+			this.chipStage.Name = "chipStage";
+			this.chipStage.Size = new System.Drawing.Size(84, 22);
+			this.chipStage.Text = "Lead";
+			this.chipStage.Location = new System.Drawing.Point(12, 42);
+			this.chipStage.TabIndex = 2;
 			//
 			// labelAmount
 			//
@@ -156,7 +146,7 @@ namespace RelayCrm.Dialogs
 			// linkCompany
 			//
 			this.linkCompany.AutoSize = true;
-			this.linkCompany.Location = new System.Drawing.Point(120, 44);
+			this.linkCompany.Location = new System.Drawing.Point(104, 46);
 			this.linkCompany.Name = "linkCompany";
 			this.linkCompany.Size = new System.Drawing.Size(59, 15);
 			this.linkCompany.TabIndex = 1;
@@ -169,12 +159,12 @@ namespace RelayCrm.Dialogs
 			this.labelTitle.Anchor = ((Wisej.Web.AnchorStyles)(((Wisej.Web.AnchorStyles.Top | Wisej.Web.AnchorStyles.Left)
 			| Wisej.Web.AnchorStyles.Right)));
 			this.labelTitle.AutoEllipsis = true;
-			this.labelTitle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
 			this.labelTitle.Location = new System.Drawing.Point(10, 10);
 			this.labelTitle.Name = "labelTitle";
 			this.labelTitle.Size = new System.Drawing.Size(576, 30);
 			this.labelTitle.TabIndex = 0;
 			this.labelTitle.Text = "Deal";
+			this.labelTitle.AppearanceKey = "relay-page-title";
 			//
 			// toolStrip
 			//
@@ -189,6 +179,7 @@ namespace RelayCrm.Dialogs
 			this.toolStrip.Size = new System.Drawing.Size(844, 25);
 			this.toolStrip.TabIndex = 1;
 			this.toolStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
+			this.toolStrip.CssClass = "relay-toolbar";
 			//
 			// buttonEdit
 			//
@@ -256,6 +247,7 @@ namespace RelayCrm.Dialogs
 			this.groupBoxContacts.TabIndex = 1;
 			this.groupBoxContacts.TabStop = false;
 			this.groupBoxContacts.Text = "Related contacts";
+			this.groupBoxContacts.CssClass = "relay-card";
 			//
 			// listViewContacts
 			//
@@ -305,6 +297,7 @@ namespace RelayCrm.Dialogs
 			this.groupBoxDetails.TabIndex = 0;
 			this.groupBoxDetails.TabStop = false;
 			this.groupBoxDetails.Text = "Details";
+			this.groupBoxDetails.CssClass = "relay-card";
 			//
 			// tableDetails
 			//
@@ -502,7 +495,7 @@ namespace RelayCrm.Dialogs
 			//
 			// tabPageActivity
 			//
-			this.tabPageActivity.Controls.Add(this.listViewActivity);
+			this.tabPageActivity.Controls.Add(this.timelineActivity);
 			this.tabPageActivity.Location = new System.Drawing.Point(4, 24);
 			this.tabPageActivity.Name = "tabPageActivity";
 			this.tabPageActivity.Padding = new Wisej.Web.Padding(3);
@@ -510,46 +503,14 @@ namespace RelayCrm.Dialogs
 			this.tabPageActivity.TabIndex = 0;
 			this.tabPageActivity.Text = "Activity";
 			//
-			// listViewActivity
+			// timelineActivity
 			//
-			this.listViewActivity.Columns.AddRange(new Wisej.Web.ColumnHeader[] {
-			this.columnActivityDate,
-			this.columnActivityType,
-			this.columnActivitySubject,
-			this.columnActivityUser,
-			this.columnActivityNotes});
-			this.listViewActivity.Dock = Wisej.Web.DockStyle.Fill;
-			this.listViewActivity.Location = new System.Drawing.Point(3, 3);
-			this.listViewActivity.Name = "listViewActivity";
-			this.listViewActivity.ShowItemToolTips = true;
-			this.listViewActivity.Size = new System.Drawing.Size(518, 310);
-			this.listViewActivity.TabIndex = 0;
-			this.listViewActivity.View = Wisej.Web.View.Details;
-			//
-			// columnActivityDate
-			//
-			this.columnActivityDate.Text = "Date";
-			this.columnActivityDate.Width = 150;
-			//
-			// columnActivityType
-			//
-			this.columnActivityType.Text = "Type";
-			this.columnActivityType.Width = 64;
-			//
-			// columnActivitySubject
-			//
-			this.columnActivitySubject.Text = "Subject";
-			this.columnActivitySubject.Width = 150;
-			//
-			// columnActivityUser
-			//
-			this.columnActivityUser.Text = "By";
-			this.columnActivityUser.Width = 100;
-			//
-			// columnActivityNotes
-			//
-			this.columnActivityNotes.Text = "Notes";
-			this.columnActivityNotes.Width = 200;
+			this.timelineActivity.Dock = Wisej.Web.DockStyle.Fill;
+			this.timelineActivity.Location = new System.Drawing.Point(3, 3);
+			this.timelineActivity.Name = "timelineActivity";
+			this.timelineActivity.Size = new System.Drawing.Size(518, 310);
+			this.timelineActivity.TabIndex = 0;
+			this.timelineActivity.TimeFormat = "MMM d, yyyy  HH:mm";
 			//
 			// tabPageTasks
 			//
@@ -615,6 +576,7 @@ namespace RelayCrm.Dialogs
 			this.buttonClose.Size = new System.Drawing.Size(92, 27);
 			this.buttonClose.TabIndex = 0;
 			this.buttonClose.Text = "Close";
+			this.buttonClose.CssClass = "relay-primary";
 			//
 			// DealDetailDialog
 			//
@@ -657,9 +619,9 @@ namespace RelayCrm.Dialogs
 		#endregion
 
 		private Wisej.Web.Panel panelHeader;
-		private Wisej.Web.Label labelStages;
+		private Wisej.Web.Stepper stepperStages;
 		private Wisej.Web.Label labelOwner;
-		private Wisej.Web.Label labelStage;
+		private Wisej.Web.ChipLabel chipStage;
 		private Wisej.Web.Label labelAmount;
 		private Wisej.Web.LinkLabel linkCompany;
 		private Wisej.Web.Label labelTitle;
@@ -693,12 +655,7 @@ namespace RelayCrm.Dialogs
 		private Wisej.Web.Label labelLostValue;
 		private Wisej.Web.TabControl tabControl;
 		private Wisej.Web.TabPage tabPageActivity;
-		private Wisej.Web.ListView listViewActivity;
-		private Wisej.Web.ColumnHeader columnActivityDate;
-		private Wisej.Web.ColumnHeader columnActivityType;
-		private Wisej.Web.ColumnHeader columnActivitySubject;
-		private Wisej.Web.ColumnHeader columnActivityUser;
-		private Wisej.Web.ColumnHeader columnActivityNotes;
+		private Wisej.Web.Timeline timelineActivity;
 		private Wisej.Web.TabPage tabPageTasks;
 		private Wisej.Web.ListView listViewTasks;
 		private Wisej.Web.ColumnHeader columnTaskTitle;

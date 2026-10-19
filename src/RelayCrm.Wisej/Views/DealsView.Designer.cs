@@ -34,17 +34,17 @@ namespace RelayCrm.Views
 			Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle3 = new Wisej.Web.DataGridViewCellStyle();
 			Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle4 = new Wisej.Web.DataGridViewCellStyle();
 			this.panelList = new Wisej.Web.Panel();
-			this.linkEmpty = new Wisej.Web.LinkLabel();
+			this.emptyState = new Wisej.Web.EmptyState();
 			this.dataGridView = new Wisej.Web.DataGridView();
 			this.colTitle = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colCompany = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colAmount = new Wisej.Web.DataGridViewTextBoxColumn();
-			this.colStage = new Wisej.Web.DataGridViewTextBoxColumn();
+			this.colStage = new Wisej.Web.DataGridViewChipColumn();
 			this.colProbability = new Wisej.Web.DataGridViewTextBoxColumn();
-			this.colOwner = new Wisej.Web.DataGridViewTextBoxColumn();
+			this.colOwner = new Wisej.Web.DataGridViewAvatarColumn();
 			this.colClose = new Wisej.Web.DataGridViewTextBoxColumn();
-			this.colCloseTag = new Wisej.Web.DataGridViewTextBoxColumn();
-			this.flowBoard = new Wisej.Web.FlowLayoutPanel();
+			this.colCloseTag = new Wisej.Web.DataGridViewChipColumn();
+			this.kanbanBoard = new Wisej.Web.KanbanBoard();
 			this.panelCaption = new Wisej.Web.Panel();
 			this.linkCaptionClear = new Wisej.Web.LinkLabel();
 			this.labelCaption = new Wisej.Web.Label();
@@ -76,7 +76,6 @@ namespace RelayCrm.Views
 			this.menuDelete = new Wisej.Web.MenuItem();
 			this.panelList.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
-			this.flowBoard.SuspendLayout();
 			this.panelCaption.SuspendLayout();
 			this.panelFilters.SuspendLayout();
 			this.toolStrip.SuspendLayout();
@@ -84,7 +83,7 @@ namespace RelayCrm.Views
 			//
 			// panelList
 			//
-			this.panelList.Controls.Add(this.linkEmpty);
+			this.panelList.Controls.Add(this.emptyState);
 			this.panelList.Controls.Add(this.dataGridView);
 			this.panelList.Dock = Wisej.Web.DockStyle.Fill;
 			this.panelList.Location = new System.Drawing.Point(0, 98);
@@ -93,19 +92,19 @@ namespace RelayCrm.Views
 			this.panelList.TabIndex = 4;
 			this.panelList.Visible = false;
 			//
-			// linkEmpty
+			// emptyState
 			//
-			this.linkEmpty.BackColor = System.Drawing.SystemColors.Window;
-			this.linkEmpty.Dock = Wisej.Web.DockStyle.Fill;
-			this.linkEmpty.LinkArea = new Wisej.Web.LinkArea(0, 0);
-			this.linkEmpty.Location = new System.Drawing.Point(0, 0);
-			this.linkEmpty.Name = "linkEmpty";
-			this.linkEmpty.Size = new System.Drawing.Size(1000, 502);
-			this.linkEmpty.TabIndex = 1;
-			this.linkEmpty.Text = "No deals found.";
-			this.linkEmpty.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.linkEmpty.Visible = false;
-			this.linkEmpty.LinkClicked += new Wisej.Web.LinkLabelLinkClickedEventHandler(this.linkClear_LinkClicked);
+			this.emptyState.ActionText = "Clear filters";
+			this.emptyState.Dock = Wisej.Web.DockStyle.Fill;
+			this.emptyState.Icon = "resource.wx/Wisej.Ext.BootstrapIcons/briefcase.svg";
+			this.emptyState.Kind = Wisej.Web.EmptyStateKind.NoResults;
+			this.emptyState.Location = new System.Drawing.Point(0, 0);
+			this.emptyState.Name = "emptyState";
+			this.emptyState.Size = new System.Drawing.Size(1000, 502);
+			this.emptyState.TabIndex = 1;
+			this.emptyState.Title = "No deals match the filters.";
+			this.emptyState.Visible = false;
+			this.emptyState.ActionClick += new System.EventHandler(this.emptyState_ActionClick);
 			//
 			// dataGridView
 			//
@@ -133,9 +132,11 @@ namespace RelayCrm.Views
 			this.dataGridView.TabIndex = 0;
 			this.dataGridView.ContextMenu = this.contextMenu;
 			this.dataGridView.CellDoubleClick += new Wisej.Web.DataGridViewCellEventHandler(this.dataGridView_CellDoubleClick);
-			this.dataGridView.CellFormatting += new Wisej.Web.DataGridViewCellFormattingEventHandler(this.dataGridView_CellFormatting);
 			this.dataGridView.CellMouseDown += new Wisej.Web.DataGridViewCellMouseEventHandler(this.dataGridView_CellMouseDown);
 			this.dataGridView.KeyDown += new Wisej.Web.KeyEventHandler(this.dataGridView_KeyDown);
+			this.dataGridView.BorderStyle = Wisej.Web.BorderStyle.None;
+			this.dataGridView.CssClass = "relay-grid";
+			this.dataGridView.RowTemplate.Height = 44;
 			//
 			// colTitle
 			//
@@ -169,7 +170,7 @@ namespace RelayCrm.Views
 			this.colStage.DataPropertyName = "StageName";
 			this.colStage.HeaderText = "Stage";
 			this.colStage.Name = "colStage";
-			this.colStage.Width = 100;
+			this.colStage.Width = 120;
 			//
 			// colProbability
 			//
@@ -185,7 +186,8 @@ namespace RelayCrm.Views
 			this.colOwner.DataPropertyName = "OwnerName";
 			this.colOwner.HeaderText = "Owner";
 			this.colOwner.Name = "colOwner";
-			this.colOwner.Width = 130;
+			this.colOwner.Width = 150;
+			this.colOwner.TextMember = "OwnerName";
 			//
 			// colClose
 			//
@@ -202,18 +204,32 @@ namespace RelayCrm.Views
 			this.colCloseTag.HeaderText = "Status";
 			this.colCloseTag.Name = "colCloseTag";
 			this.colCloseTag.Width = 150;
+			this.colCloseTag.ToneMember = "CloseTone";
 			//
-			// flowBoard
+			// kanbanBoard
 			//
-			this.flowBoard.AutoScroll = true;
-			this.flowBoard.Dock = Wisej.Web.DockStyle.Fill;
-			this.flowBoard.Location = new System.Drawing.Point(0, 98);
-			this.flowBoard.Name = "flowBoard";
-			this.flowBoard.Padding = new Wisej.Web.Padding(8, 8, 8, 0);
-			this.flowBoard.Size = new System.Drawing.Size(1000, 502);
-			this.flowBoard.TabIndex = 3;
-			this.flowBoard.WrapContents = false;
-			this.flowBoard.Resize += new System.EventHandler(this.flowBoard_Resize);
+			this.kanbanBoard.AllowDrag = true;
+			this.kanbanBoard.AllowReorder = true;
+			this.kanbanBoard.AutoSizeColumns = true;
+			this.kanbanBoard.AvatarMember = "OwnerName";
+			this.kanbanBoard.ColumnWidth = 220;
+			this.kanbanBoard.ContextMenu = this.contextMenu;
+			this.kanbanBoard.Dock = Wisej.Web.DockStyle.Fill;
+			this.kanbanBoard.Location = new System.Drawing.Point(0, 98);
+			this.kanbanBoard.MetaMember = "Meta";
+			this.kanbanBoard.Name = "kanbanBoard";
+			this.kanbanBoard.OrderMember = "BoardOrder";
+			this.kanbanBoard.Size = new System.Drawing.Size(1000, 502);
+			this.kanbanBoard.StatusMember = "Status";
+			this.kanbanBoard.TabIndex = 3;
+			this.kanbanBoard.TagMember = "CloseTag";
+			this.kanbanBoard.TagToneMember = "CloseTone";
+			this.kanbanBoard.TitleMember = "Title";
+			this.kanbanBoard.CardMoving += new System.EventHandler<Wisej.Web.KanbanCardMoveEventArgs>(this.kanbanBoard_CardMoving);
+			this.kanbanBoard.CardMoved += new System.EventHandler<Wisej.Web.KanbanCardMoveEventArgs>(this.kanbanBoard_CardMoved);
+			this.kanbanBoard.CardClick += new System.EventHandler<Wisej.Web.KanbanCardEventArgs>(this.kanbanBoard_CardClick);
+			this.kanbanBoard.CardDoubleClick += new System.EventHandler<Wisej.Web.KanbanCardEventArgs>(this.kanbanBoard_CardDoubleClick);
+			this.kanbanBoard.Resize += new System.EventHandler(this.kanbanBoard_Resize);
 			//
 			// panelCaption
 			//
@@ -384,6 +400,7 @@ namespace RelayCrm.Views
 			this.toolStrip.Size = new System.Drawing.Size(800, 27);
 			this.toolStrip.TabIndex = 0;
 			this.toolStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
+			this.toolStrip.CssClass = "relay-toolbar";
 			//
 			// buttonNew
 			//
@@ -473,13 +490,13 @@ namespace RelayCrm.Views
 			//
 			// DealsView
 			//
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.Color.White;
 			this.Controls.Add(this.panelList);
-			this.Controls.Add(this.flowBoard);
+			this.Controls.Add(this.kanbanBoard);
 			this.Controls.Add(this.panelCaption);
 			this.Controls.Add(this.panelFilters);
 			this.Controls.Add(this.toolStrip);
+			this.CssClass = "relay-card";
 			this.Name = "DealsView";
 			this.Size = new System.Drawing.Size(1000, 600);
 			this.toolStrip.ResumeLayout(false);
@@ -488,8 +505,6 @@ namespace RelayCrm.Views
 			this.panelFilters.PerformLayout();
 			this.panelCaption.ResumeLayout(false);
 			this.panelCaption.PerformLayout();
-			this.flowBoard.ResumeLayout(false);
-			this.flowBoard.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView)).EndInit();
 			this.panelList.ResumeLayout(false);
 			this.panelList.PerformLayout();
@@ -501,17 +516,16 @@ namespace RelayCrm.Views
 		#endregion
 
 		private Wisej.Web.Panel panelList;
-		private Wisej.Web.LinkLabel linkEmpty;
+		private Wisej.Web.EmptyState emptyState;
 		private Wisej.Web.DataGridView dataGridView;
 		private Wisej.Web.DataGridViewTextBoxColumn colTitle;
 		private Wisej.Web.DataGridViewTextBoxColumn colCompany;
 		private Wisej.Web.DataGridViewTextBoxColumn colAmount;
-		private Wisej.Web.DataGridViewTextBoxColumn colStage;
+		private Wisej.Web.DataGridViewChipColumn colStage;
 		private Wisej.Web.DataGridViewTextBoxColumn colProbability;
-		private Wisej.Web.DataGridViewTextBoxColumn colOwner;
+		private Wisej.Web.DataGridViewAvatarColumn colOwner;
 		private Wisej.Web.DataGridViewTextBoxColumn colClose;
-		private Wisej.Web.DataGridViewTextBoxColumn colCloseTag;
-		private Wisej.Web.FlowLayoutPanel flowBoard;
+		private Wisej.Web.DataGridViewChipColumn colCloseTag;
 		private Wisej.Web.Panel panelCaption;
 		private Wisej.Web.LinkLabel linkCaptionClear;
 		private Wisej.Web.Label labelCaption;
@@ -541,5 +555,6 @@ namespace RelayCrm.Views
 		private Wisej.Web.MenuItem menuMoveTo;
 		private Wisej.Web.MenuItem menuSeparator1;
 		private Wisej.Web.MenuItem menuDelete;
+		private Wisej.Web.KanbanBoard kanbanBoard;
 	}
 }

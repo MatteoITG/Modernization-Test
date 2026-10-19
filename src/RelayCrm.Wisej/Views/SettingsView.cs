@@ -20,7 +20,6 @@ namespace RelayCrm.Views
 
 		private string profileColor;
 		private List<StageRow> stages = new List<StageRow>();
-		private readonly Dictionary<int, Image> avatars = new Dictionary<int, Image>();
 
 		public SettingsView()
 		{
@@ -31,7 +30,6 @@ namespace RelayCrm.Views
 			this.dataGridTags.AutoGenerateColumns = false;
 			IconImages.Apply(this.usersStrip);
 			IconImages.Apply(this.tagsStrip);
-			this.Disposed += (s, e) => ClearAvatars();
 		}
 
 		/// <summary>
@@ -127,9 +125,8 @@ namespace RelayCrm.Views
 				return;
 
 			var name = this.textBoxProfileName.Text.Trim();
-			var old = this.pictureProfile.Image;
-			this.pictureProfile.Image = Avatars.Create(name, this.profileColor, 56);
-			old?.Dispose();
+			this.avatarProfile.Text = RelayCrm.Text.Initials(name);
+			this.avatarProfile.ImageSource = Avatars.Source(name, this.profileColor);
 			this.labelPreviewName.Text = name.Length == 0 ? "Your name" : name;
 			this.labelPreviewEmail.Text = this.textBoxProfileEmail.Text.Trim();
 
@@ -182,13 +179,6 @@ namespace RelayCrm.Views
 
 		#region Users
 
-		private void ClearAvatars()
-		{
-			foreach (var image in this.avatars.Values)
-				image.Dispose();
-			this.avatars.Clear();
-		}
-
 		private void LoadUsers()
 		{
 			List<UserRow> users = null;
@@ -198,15 +188,7 @@ namespace RelayCrm.Views
 			this.loading = true;
 			try
 			{
-				// the new pictures are in place before the grid shows the rows; the old ones are disposed after.
-				var size = 24;
-				var old = this.avatars.Values.ToList();
-				this.avatars.Clear();
-				foreach (var user in users)
-					this.avatars[user.Id] = Avatars.Create(user.Name, user.AvatarColor, size);
 				this.dataGridUsers.DataSource = users;
-				foreach (var image in old)
-					image.Dispose();
 				this.labelUsersTitle.Text = $"Team ({users.Count(u => u.Active)} active)";
 			}
 			finally
@@ -227,12 +209,7 @@ namespace RelayCrm.Views
 			if (user == null)
 				return;
 
-			if (e.ColumnIndex == this.colUserAvatar.Index)
-			{
-				e.Value = this.avatars.TryGetValue(user.Id, out var image) ? image : null;
-				e.FormattingApplied = true;
-			}
-			else if (!user.Active)
+			if (!user.Active)
 			{
 				e.CellStyle.ForeColor = SystemColors.GrayText;
 			}

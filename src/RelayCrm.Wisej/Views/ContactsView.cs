@@ -29,7 +29,7 @@ namespace RelayCrm.Views
 
 			this.dataGridView.AutoGenerateColumns = false;
 			IconImages.Apply(this.toolStrip);
-			this.textSearch.Watermark = "Name, title, company, email, phone or tag";
+			ToneExtensions.AddStageTones(this.colStage.ToneMap);
 
 			this.quickFilter = ContactService.DefaultQuickFilter;
 			SetupFilterFields();
@@ -55,10 +55,6 @@ namespace RelayCrm.Views
 				this.allRows = rows;
 			ApplyFilters();
 		}
-
-		private ToolBarButton[] QuickButtons => new[] { this.quickAll, this.quickLeads, this.quickProspects, this.quickCustomers, this.quickMine };
-
-		private static readonly string[] QuickTexts = { "All", "Leads", "Prospects", "Customers", "My contacts" };
 
 		private void SetupFilterFields()
 		{
@@ -92,12 +88,10 @@ namespace RelayCrm.Views
 			var list = matching.ToList();
 
 			var counts = ContactService.QuickFilterCounts(list);
-			var buttons = this.QuickButtons;
-			for (var i = 0; i < buttons.Length; i++)
-			{
-				buttons[i].Text = QuickTexts[i] + " (" + counts[(ContactQuickFilter)i] + ")";
-				buttons[i].Pushed = (int)this.quickFilter == i;
-			}
+			var segments = this.segmentedQuick.Items;
+			for (var i = 0; i < segments.Count; i++)
+				segments[i].Count = counts[(ContactQuickFilter)i];
+			this.segmentedQuick.SelectedIndex = (int)this.quickFilter;
 
 			var rows = list.Where(r => ContactService.InQuickFilter(r, this.quickFilter)).ToList();
 
@@ -117,7 +111,7 @@ namespace RelayCrm.Views
 			this.buttonFilter.Pushed = filtered;
 			this.buttonClearFilter.Visible = filtered || search.Trim().Length > 0 || this.quickFilter != ContactQuickFilter.All;
 
-			GridHelper.ShowEmpty(this.linkEmpty, rows.Count == 0,
+			GridHelper.ShowEmpty(this.emptyState, rows.Count == 0,
 				this.allRows.Count == 0 ? "No contacts yet." : "No contacts match the search and the filters.",
 				this.allRows.Count == 0 ? null : "Clear the filters");
 			UpdateButtons();
@@ -172,9 +166,17 @@ namespace RelayCrm.Views
 			ApplyFilters();
 		}
 
-		private void quickFilter_Click(object sender, EventArgs e)
+		private void textSearch_ToolClick(object sender, ToolClickEventArgs e)
 		{
-			this.quickFilter = (ContactQuickFilter)Array.IndexOf(this.QuickButtons, sender);
+			this.textSearch.Text = "";
+		}
+
+		private void segmentedQuick_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (this.segmentedQuick.SelectedIndex < 0 || this.segmentedQuick.SelectedIndex == (int)this.quickFilter)
+				return;
+
+			this.quickFilter = (ContactQuickFilter)this.segmentedQuick.SelectedIndex;
 			ApplyFilters();
 		}
 
@@ -193,7 +195,7 @@ namespace RelayCrm.Views
 			ClearFilters();
 		}
 
-		private void linkEmpty_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		private void emptyState_ActionClick(object sender, EventArgs e)
 		{
 			ClearFilters();
 		}
@@ -218,9 +220,7 @@ namespace RelayCrm.Views
 			if (e.RowIndex < 0)
 				return;
 
-			if (e.ColumnIndex == this.colStage.Index)
-				e.CellStyle.ForeColor = ToneExtensions.StageTone(e.Value as string).ToColor();
-			else if (e.ColumnIndex == this.colLastContacted.Index && (e.Value as string) == "never")
+			if (e.ColumnIndex == this.colLastContacted.Index && (e.Value as string) == "never")
 				e.CellStyle.ForeColor = System.Drawing.SystemColors.GrayText;
 		}
 

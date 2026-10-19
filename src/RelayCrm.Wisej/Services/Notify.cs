@@ -1,41 +1,38 @@
 using System;
+using System.Drawing;
 using Wisej.Web;
 
 namespace RelayCrm.Services
 {
 	/// <summary>
-	/// Feedback to the user: short messages in the status bar of the main window, errors in a message box.
+	/// Toast notifications in the top right corner (Wisej AlertBox).
+	/// Migration step 2: the WinForms version wrote to the status bar of the main window and showed errors in a
+	/// message box; the "Alert Boxes" optimization of the guide replaces both with non-blocking toasts.
 	/// </summary>
 	public static class Notify
 	{
-		private static MainForm Shell => MainForm.Instance;
-
 		public static void Info(string text)
 		{
-			Status(text, ToolTipIcon.Info);
+			AlertBox.Show(text, MessageBoxIcon.Information, alignment: ContentAlignment.TopRight, autoCloseDelay: 4000);
 		}
 
 		public static void Success(string text)
 		{
-			Status(text, ToolTipIcon.None);
+			AlertBox.Show(text, MessageBoxIcon.None, alignment: ContentAlignment.TopRight, autoCloseDelay: 4000);
 		}
 
 		public static void Warning(string text)
 		{
-			// without the main window (sign-in, startup) the message must not get lost.
-			if (Shell == null || !Shell.Visible)
-				MessageBox.Show(text, "Relay", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-			else
-				Status(text, ToolTipIcon.Warning);
+			AlertBox.Show(text, MessageBoxIcon.Warning, alignment: ContentAlignment.TopRight, autoCloseDelay: 6000);
 		}
 
 		public static void Error(string text)
 		{
-			MessageBox.Show(Form.ActiveForm, text, "Relay", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			AlertBox.Show(text, MessageBoxIcon.Error, alignment: ContentAlignment.TopRight, autoCloseDelay: 8000);
 		}
 
 		/// <summary>
-		/// Runs a data operation and shows an error message instead of crashing when it fails.
+		/// Runs a data operation and shows an error toast instead of crashing when it fails.
 		/// </summary>
 		public static bool Try(Action action, string what = "The operation")
 		{
@@ -49,11 +46,6 @@ namespace RelayCrm.Services
 				Error(what + " failed: " + ex.GetBaseException().Message);
 				return false;
 			}
-		}
-
-		private static void Status(string text, ToolTipIcon icon)
-		{
-			Shell?.ShowStatus(text, icon);
 		}
 	}
 }

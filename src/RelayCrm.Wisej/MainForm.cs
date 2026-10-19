@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Linq;
 using Wisej.Web;
+using Wisej.Web.Ext.NavigationBar;
 using RelayCrm.Dialogs;
 using RelayCrm.Services;
 using RelayCrm.Views;
@@ -9,11 +10,21 @@ using RelayCrm.Views;
 namespace RelayCrm
 {
 	/// <summary>
-	/// The main window: menu, toolbar with the search box and the user menu, the page tree on the left,
-	/// the current page on the right and the status bar.
+	/// The main window: the navigation bar on the left, the header with the page title, the search box
+	/// (Ctrl+K command palette), the New menu, the notifications and the user menu, and the current page.
 	/// </summary>
+	/// <remarks>
+	/// Migration step 2: the menu bar, toolbar, page tree and status bar of the WinForms window became the
+	/// NavigationBar, a header and the CommandPalette; status messages are AlertBox toasts (see Notify) and the
+	/// overdue counter is the badge of the Tasks item. The keyboard shortcuts are accelerators of the form.
+	/// </remarks>
 	public partial class MainForm : Form
 	{
+		// colours of the navigation items (indigo accent of Themes/Relay.mixin.theme).
+		private static readonly Color NavItemColor = Color.FromArgb(75, 82, 102);
+		private static readonly Color NavSelectedColor = Color.FromArgb(79, 70, 229);
+		private static readonly Color NavSelectedBackColor = Color.FromArgb(238, 240, 254);
+
 		// the list page a detail page was opened from, to go back to it.
 		private Control listView;
 
@@ -30,11 +41,6 @@ namespace RelayCrm
 
 			Instance = this;
 			this.options = options ?? new StartOptions();
-
-			this.treeNav.ImageList = IconImages.List(16, this.treeNav.Nodes.Cast<TreeNode>().Select(n => n.ImageKey).ToArray());
-			IconImages.Apply(this.menuStrip);
-			IconImages.Apply(this.toolStrip);
-			this.textSearch.Watermark = "Search pages, contacts, companies, deals (Ctrl+K)";
 
 			CurrentUser.Changed += CurrentUser_Changed;
 		}
@@ -76,18 +82,18 @@ namespace RelayCrm
 		#region Navigation
 
 		/// <summary>
-		/// Selects the tree node of a page and returns the view it shows.
+		/// Selects the navigation item of a page and returns the view it shows.
 		/// </summary>
 		public Control SelectPage(string viewName)
 		{
-			var node = FindNode(viewName);
-			if (node == null)
+			var item = FindItem(viewName);
+			if (item == null)
 				return null;
 
-			if (this.treeNav.SelectedNode == node)
+			if (this.navigationBar.SelectedItem == item)
 				ShowView(viewName);
 			else
-				this.treeNav.SelectedNode = node;
+				this.navigationBar.SelectedItem = item;
 
 			return this.CurrentView;
 		}
@@ -97,14 +103,14 @@ namespace RelayCrm
 		/// </summary>
 		public void ShowDetail(Control detail, string listViewName)
 		{
-			var node = FindNode(listViewName);
-			if (node != null && this.treeNav.SelectedNode != node)
+			var item = FindItem(listViewName);
+			if (item != null && this.navigationBar.SelectedItem != item)
 			{
-				// coming from another page: select the list's node without loading the list.
-				this.treeNav.AfterSelect -= treeNav_AfterSelect;
-				this.treeNav.SelectedNode = node;
-				this.treeNav.AfterSelect += treeNav_AfterSelect;
-				UpdateTitle(node);
+				// coming from another page: select the list's item without loading the list.
+				this.navigationBar.SelectedItemChanged -= navigationBar_SelectedItemChanged;
+				this.navigationBar.SelectedItem = item;
+				this.navigationBar.SelectedItemChanged += navigationBar_SelectedItemChanged;
+				UpdateTitle(item);
 				this.listView?.Dispose();
 				this.listView = null;
 			}
@@ -134,9 +140,9 @@ namespace RelayCrm
 				if (list is IRefreshable refreshable)
 					refreshable.RefreshData();
 			}
-			else if (this.treeNav.SelectedNode != null)
+			else if (this.navigationBar.SelectedItem != null)
 			{
-				ShowView((string)this.treeNav.SelectedNode.Tag);
+				ShowView((string)this.navigationBar.SelectedItem.Tag);
 			}
 		}
 
@@ -150,9 +156,9 @@ namespace RelayCrm
 			SelectPage("DashboardView");
 		}
 
-		private TreeNode FindNode(string viewName)
+		private NavigationBarItem FindItem(string viewName)
 		{
-			return this.treeNav.Nodes.Cast<TreeNode>().FirstOrDefault(n => (string)n.Tag == viewName);
+			return this.navigationBar.Items.Cast<NavigationBarItem>().FirstOrDefault(i => (string)i.Tag == viewName);
 		}
 
 		private void ShowView(string viewName)
@@ -185,21 +191,32 @@ namespace RelayCrm
 			view.Dock = DockStyle.Fill;
 			this.panelMain.Controls.Add(view);
 			view.Focus();
-			this.buttonBack.Enabled = this.menuBack.Enabled = this.listView != null;
+			this.buttonBack.Visible = this.listView != null;
+
+			// on a phone the navigation bar covers the page: close it once a page is chosen.
+			if (Application.ActiveProfile?.Name == "Phone")
+				this.navigationBar.Visible = false;
 		}
 
-		private void UpdateTitle(TreeNode node)
+		private void UpdateTitle(NavigationBarItem item)
 		{
-			var page = (string)node.Tag == "TasksView" ? "Tasks" : node.Text;
-			this.Text = "Relay CRM - " + page;
+			this.labelTitle.Text = item.Text;
+			Application.Title = "Relay CRM - " + item.Text;
+
+			// the selected item in the accent colour of the theme.
+			foreach (NavigationBarItem i in this.navigationBar.Items)
+			{
+				i.BackColor = i == item ? NavSelectedBackColor : Color.White;
+				i.ForeColor = i == item ? NavSelectedColor : NavItemColor;
+			}
 		}
 
 		#endregion
 
-		#region User, badges and status
+		#region User and badges
 
 		/// <summary>
-		/// Updates the overdue tasks counter of the tree, the toolbar and the status bar.
+		/// Updates the overdue tasks badge of the navigation bar and the notifications button.
 		/// </summary>
 		public void RefreshBadges()
 		{
@@ -209,41 +226,15 @@ namespace RelayCrm
 			var overdue = 0;
 			Notify.Try(() => overdue = TaskService.OverdueCount(CurrentUser.Id), "Loading the overdue tasks");
 
-			var tasks = FindNode("TasksView");
-			if (tasks != null)
-				tasks.Text = overdue > 0 ? "Tasks (" + overdue + ")" : "Tasks";
-
+			this.navTasks.InfoText = overdue > 0 ? overdue.ToString() : null;
 			this.buttonNotifications.Text = overdue > 0 ? overdue.ToString() : "";
 			this.buttonNotifications.ToolTipText = overdue > 0 ? overdue + " overdue tasks" : "No new notifications";
-			this.statusOverdue.Text = overdue == 0 ? "No overdue tasks" : overdue == 1 ? "1 overdue task" : overdue + " overdue tasks";
-		}
-
-		/// <summary>
-		/// Shows a short message in the status bar; it goes away after a few seconds.
-		/// </summary>
-		public void ShowStatus(string text, ToolTipIcon icon)
-		{
-			this.statusMessage.Text = DateTime.Now.ToString("HH:mm") + "   " + text;
-			this.statusMessage.IconSource = icon == ToolTipIcon.Warning ? "messagebox-warning"
-				: icon == ToolTipIcon.Error ? "messagebox-error"
-				: icon == ToolTipIcon.Info ? "messagebox-information"
-				: null;
-			this.timerStatus.Stop();
-			this.timerStatus.Start();
-		}
-
-		private void timerStatus_Tick(object sender, EventArgs e)
-		{
-			this.timerStatus.Stop();
-			this.statusMessage.Text = "Ready";
-			this.statusMessage.IconSource = null;
 		}
 
 		private void UpdateUser()
 		{
-			this.dropDownUser.Text = CurrentUser.Name;
-			this.dropDownUser.ToolTipText = CurrentUser.Email;
-			this.statusUser.Text = CurrentUser.Name + " · " + CurrentUser.Role;
+			this.avatarUser.Text = CurrentUser.Initials;
+			this.avatarUser.ToolTipText = CurrentUser.Name + " · " + CurrentUser.Role + "\n" + CurrentUser.Email;
 		}
 
 		private void CurrentUser_Changed(object sender, EventArgs e)
@@ -268,39 +259,41 @@ namespace RelayCrm
 
 		#endregion
 
-		#region Search
+		#region Search (command palette)
 
-		private void OpenSearch(string text)
+		private void textSearch_Click(object sender, EventArgs e)
 		{
-			SearchResult result;
-			using (var dialog = new SearchDialog())
-			{
-				dialog.Query = text;
-				if (dialog.ShowDialog(this) != DialogResult.OK)
-					return;
-				result = dialog.Result;
-			}
+			this.commandPalette.Show();
+		}
 
-			this.textSearch.Text = "";
-			switch (result?.Kind)
+		private void textSearch_ToolClick(object sender, ToolClickEventArgs e)
+		{
+			this.commandPalette.Show();
+		}
+
+		private void commandPalette_QueryChanged(object sender, CommandQueryEventArgs e)
+		{
+			e.Results = SearchService.Search(e.Query, 40).Select(r => new PaletteCommand
+			{
+				Text = r.Text,
+				Description = r.Description,
+				Icon = r.Icon,
+				Category = r.Kind == SearchKind.Page ? "Pages" : r.Kind == SearchKind.Company ? "Companies" : r.Kind + "s",
+				Tag = r,
+			}).ToList();
+		}
+
+		private void commandPalette_CommandExecuted(object sender, CommandEventArgs e)
+		{
+			if (!(e.Command?.Tag is SearchResult result))
+				return;
+
+			switch (result.Kind)
 			{
 				case SearchKind.Page: Navigator.ShowPage(result.Target); break;
 				case SearchKind.Contact: Navigator.OpenContact(result.Id); break;
 				case SearchKind.Company: Navigator.OpenCompany(result.Id); break;
 				case SearchKind.Deal: RefreshAfter(Navigator.OpenDeal(result.Id)); break;
-			}
-		}
-
-		private void menuSearch_Click(object sender, EventArgs e)
-		{
-			OpenSearch(this.textSearch.Text);
-		}
-
-		private void textSearch_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.KeyCode == Keys.Enter || e.KeyCode == Keys.Down)
-			{
-				OpenSearch(this.textSearch.Text);
 			}
 		}
 
@@ -315,13 +308,24 @@ namespace RelayCrm
 				refreshable.RefreshData();
 		}
 
-		private void treeNav_AfterSelect(object sender, TreeViewEventArgs e)
+		private void navigationBar_SelectedItemChanged(object sender, EventArgs e)
 		{
-			if (e.Node == null)
+			var item = this.navigationBar.SelectedItem;
+			if (item == null)
 				return;
 
-			ShowView((string)e.Node.Tag);
-			UpdateTitle(e.Node);
+			ShowView((string)item.Tag);
+			UpdateTitle(item);
+		}
+
+		private void navigationBar_TitleClick(object sender, EventArgs e)
+		{
+			SelectPage("DashboardView");
+		}
+
+		private void buttonMenu_Click(object sender, EventArgs e)
+		{
+			this.navigationBar.Visible = !this.navigationBar.Visible;
 		}
 
 		private void menuPage_Click(object sender, EventArgs e)
@@ -335,13 +339,31 @@ namespace RelayCrm
 				GoBack();
 		}
 
-		private void menuRefresh_Click(object sender, EventArgs e)
+		private void RefreshPage()
 		{
 			if (this.CurrentView is IRefreshable refreshable)
 			{
 				refreshable.RefreshData();
 				RefreshBadges();
 				Notify.Info("Refreshed.");
+			}
+		}
+
+		private void MainForm_Accelerator(object sender, AcceleratorEventArgs e)
+		{
+			switch (e.KeyData)
+			{
+				case Keys.Alt | Keys.N: menuNewContact_Click(sender, e); break;
+				case Keys.Alt | Keys.T: menuNewTask_Click(sender, e); break;
+				case Keys.Alt | Keys.L: menuLogActivity_Click(sender, e); break;
+				case Keys.Alt | Keys.B: buttonBack_Click(sender, e); break;
+				case Keys.Alt | Keys.R: RefreshPage(); break;
+				default:
+					// Alt+1 ... Alt+8: the pages in the order of the navigation bar.
+					var index = e.KeyCode - Keys.D1;
+					if (e.Alt && index >= 0 && index < this.navigationBar.Items.Count)
+						SelectPage((string)this.navigationBar.Items[index].Tag);
+					break;
 			}
 		}
 
@@ -370,14 +392,14 @@ namespace RelayCrm
 			RefreshAfter(LogActivityDialog.Show());
 		}
 
+		private void avatarUser_Click(object sender, EventArgs e)
+		{
+			this.contextMenuUser.Show(this.avatarUser, Placement.BottomRight);
+		}
+
 		private void menuSignOut_Click(object sender, EventArgs e)
 		{
 			SignOut();
-		}
-
-		private void menuExit_Click(object sender, EventArgs e)
-		{
-			Close();
 		}
 
 		private void menuUserProfile_Click(object sender, EventArgs e)
@@ -387,8 +409,8 @@ namespace RelayCrm
 
 		private void menuAbout_Click(object sender, EventArgs e)
 		{
-			MessageBox.Show(this,
-				"Relay CRM\n\nThe classic Windows Forms edition of the Relay sample CRM.\n"
+			MessageBox.Show(
+				"Relay CRM\n\nThe Windows Forms edition of the Relay sample CRM, migrated to the web with Wisej.NET 4.2.\n"
 				+ "Data: " + Data.RelayDbContext.DatabasePath + "\n\nAll names and companies are fictional.",
 				"About Relay", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
@@ -405,16 +427,11 @@ namespace RelayCrm
 				return;
 			}
 
-			var answer = MessageBox.Show(this,
+			var answer = MessageBox.Show(
 				$"You have {overdue} overdue task{(overdue == 1 ? "" : "s")}.\n\nOpen your tasks now?",
 				"Notifications", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 			if (answer == DialogResult.Yes)
 				Navigator.ShowPage("TasksView");
-		}
-
-		private void statusOverdue_Click(object sender, EventArgs e)
-		{
-			Navigator.ShowPage("TasksView");
 		}
 
 		#endregion

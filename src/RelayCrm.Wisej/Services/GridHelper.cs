@@ -60,16 +60,17 @@ namespace RelayCrm.Services
 		}
 
 		/// <summary>
-		/// Shows the "nothing found" link over an empty grid; the link part clears the filters.
+		/// Shows the empty state over an empty grid; its action button clears the filters.
 		/// </summary>
-		public static void ShowEmpty(LinkLabel label, bool visible, string text, string linkText)
+		public static void ShowEmpty(EmptyState empty, bool visible, string text, string actionText)
 		{
-			label.Visible = visible;
+			empty.Visible = visible;
 			if (!visible)
 				return;
 
-			label.Text = linkText == null ? text : text + " " + linkText;
-			label.LinkArea = linkText == null ? new LinkArea(0, 0) : new LinkArea(text.Length + 1, linkText.Length);
+			empty.Title = text;
+			empty.ActionText = actionText;
+			empty.Kind = actionText == null ? EmptyStateKind.Empty : EmptyStateKind.NoResults;
 		}
 	}
 }

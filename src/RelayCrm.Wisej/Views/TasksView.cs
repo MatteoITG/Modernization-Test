@@ -114,7 +114,7 @@ namespace RelayCrm.Views
 			var open = this.rows.Count(r => !r.Done);
 			var overdue = this.rows.Count(r => r.Group == TaskGroup.Overdue);
 			this.labelCount.Text = open + " open" + (overdue > 0 ? " · " + overdue + " overdue" : "");
-			this.labelEmpty.Visible = this.rows.Count == 0;
+			this.emptyState.Visible = this.rows.Count == 0;
 			UpdateButtons();
 		}
 

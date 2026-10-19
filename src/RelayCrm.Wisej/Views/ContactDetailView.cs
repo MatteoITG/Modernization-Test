@@ -26,8 +26,16 @@ namespace RelayCrm.Views
 			IconImages.Apply(this.activityStrip);
 			IconImages.Apply(this.dealsStrip);
 			IconImages.Apply(this.tasksStrip);
-			this.listViewActivity.SmallImageList = IconImages.List(16, "telephone", "envelope", "people", "sticky");
-			this.listViewDeals.SmallImageList = IconImages.List(16, "briefcase");
+			ToneExtensions.AddTaskStatusTones(this.colTaskStatus.ToneMap);
+
+			// the deal cards show these properties of ContactDealItem.
+			this.listDeals.DisplayMembers.Title = "Title";
+			this.listDeals.DisplayMembers.Description = "Description";
+			this.listDeals.DisplayMembers.Meta = "Meta";
+			this.listDeals.DisplayMembers.Icon = "Icon";
+			this.listDeals.DisplayMembers.IconTone = "IconTone";
+			this.listDeals.DisplayMembers.Badge = "StageName";
+			this.listDeals.DisplayMembers.BadgeTone = "StageTone";
 		}
 
 		/// <summary>
@@ -67,10 +75,8 @@ namespace RelayCrm.Views
 
 			var name = string.IsNullOrEmpty(detail.FullName) ? "(No name)" : detail.FullName;
 			this.labelName.Text = name;
-			var old = this.pictureAvatar.Image;
-			this.pictureAvatar.Image = Avatars.Create(name, SettingsService.AvatarPalette[detail.Id % SettingsService.AvatarPalette.Length],
-				52);
-			old?.Dispose();
+			this.avatar.Text = RelayCrm.Text.Initials(name);
+			this.avatar.ImageSource = Avatars.Source(name, SettingsService.AvatarPalette[detail.Id % SettingsService.AvatarPalette.Length]);
 
 			var hasTitle = !string.IsNullOrEmpty(detail.Title);
 			var hasCompany = detail.CompanyId != null && !string.IsNullOrEmpty(detail.CompanyName);
@@ -78,8 +84,8 @@ namespace RelayCrm.Views
 			this.linkCompany.Text = hasCompany ? detail.CompanyName : "";
 			this.linkCompany.Visible = hasCompany;
 
-			this.labelStage.Text = detail.Stage.ToString();
-			this.labelStage.ForeColor = ToneExtensions.StageTone(detail.Stage).ToColor();
+			this.chipStage.Text = detail.Stage.ToString();
+			this.chipStage.Tone = ToneExtensions.StageTone(detail.Stage).ToChip();
 			this.labelOwner.Text = "Owner: " + (detail.OwnerName ?? "Unassigned");
 
 			// Overview
@@ -105,24 +111,23 @@ namespace RelayCrm.Views
 				return;
 
 			var now = DateTime.Now;
-			this.listViewActivity.BeginUpdate();
-			this.listViewActivity.Items.Clear();
+			this.timelineActivity.Items.Clear();
 			foreach (var a in activities)
 			{
-				var item = new ListViewItem(Fmt.DateAndTime(a.Date), Icons.NameOf(ActivityLogService.Icon(a.Type))) { Tag = a.Id };
-				item.SubItems.Add(a.Type.ToString());
-				item.SubItems.Add(string.IsNullOrEmpty(a.Subject) ? a.Type.ToString() : a.Subject);
-				item.SubItems.Add(a.Duration > 0 ? a.Duration + " min" : "");
-				item.SubItems.Add(a.UserName ?? "");
-				item.SubItems.Add((a.Body ?? "").Replace("\r", " ").Replace("\n", " "));
-				item.ToolTipText = a.Body;
-				if (a.Date > now)
-					item.ForeColor = Tone.Primary.ToColor();
-				this.listViewActivity.Items.Add(item);
+				this.timelineActivity.Items.Add(new TimelineItem
+				{
+					Time = a.Date,
+					Title = string.IsNullOrEmpty(a.Subject) ? a.Type.ToString() : a.Subject,
+					Description = a.Type + (a.Duration > 0 ? " · " + a.Duration + " min" : "") + " · " + (a.UserName ?? "")
+						+ (string.IsNullOrEmpty(a.Body) ? "" : " · " + a.Body),
+					Icon = ActivityLogService.Icon(a.Type),
+					// planned activities stand out.
+					Tone = a.Date > now ? TimelineTone.Primary : TimelineTone.Neutral,
+					Tag = a.Id,
+				});
 			}
-			this.listViewActivity.EndUpdate();
 
-			this.labelNoActivity.Visible = activities.Count == 0;
+			this.emptyActivity.Visible = activities.Count == 0;
 			this.tabPageActivity.Text = activities.Count == 0 ? "Activity" : "Activity (" + activities.Count + ")";
 		}
 
@@ -132,19 +137,8 @@ namespace RelayCrm.Views
 			if (!Notify.Try(() => deals = ContactService.Deals(this.contactId), "Loading the deals"))
 				return;
 
-			this.listViewDeals.BeginUpdate();
-			this.listViewDeals.Items.Clear();
-			foreach (var deal in deals)
-			{
-				var item = new ListViewItem(deal.Title, "briefcase") { Tag = deal.Id };
-				item.SubItems.Add(deal.StageName, deal.StageTone.ToColor(), item.BackColor, item.Font);
-				item.SubItems.Add(deal.Description);
-				item.SubItems.Add(deal.Meta);
-				this.listViewDeals.Items.Add(item);
-			}
-			this.listViewDeals.EndUpdate();
-
-			this.labelNoDeals.Visible = deals.Count == 0;
+			this.listDeals.DataSource = deals;
+			this.emptyDeals.Visible = deals.Count == 0;
 			this.tabPageDeals.Text = deals.Count == 0 ? "Deals" : "Deals (" + deals.Count + ")";
 		}
 
@@ -155,7 +149,7 @@ namespace RelayCrm.Views
 				return;
 
 			this.gridTasks.DataSource = tasks;
-			this.labelNoTasks.Visible = tasks.Count == 0;
+			this.emptyTasks.Visible = tasks.Count == 0;
 			var open = tasks.Count(t => t.Status != "Done");
 			this.tabPageTasks.Text = open == 0 ? "Tasks" : "Tasks (" + open + ")";
 		}
@@ -227,11 +221,11 @@ namespace RelayCrm.Views
 			}
 		}
 
-		private void listViewDeals_ItemActivate(object sender, EventArgs e)
+		private void listDeals_ItemClick(object sender, ActionCardListItemEventArgs e)
 		{
-			if (this.listViewDeals.SelectedItems.Count == 0)
+			if (!(e.DataItem is ContactDealItem deal))
 				return;
-			if (Navigator.OpenDeal((int)this.listViewDeals.SelectedItems[0].Tag) && !this.IsDisposed)
+			if (Navigator.OpenDeal(deal.Id) && !this.IsDisposed)
 				LoadDeals();
 		}
 
@@ -245,17 +239,5 @@ namespace RelayCrm.Views
 			}
 		}
 
-		private void gridTasks_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-		{
-			if (e.RowIndex < 0 || e.ColumnIndex != this.colTaskStatus.Index)
-				return;
-
-			switch (e.Value as string)
-			{
-				case "Overdue": e.CellStyle.ForeColor = Tone.Danger.ToColor(); break;
-				case "Done": e.CellStyle.ForeColor = Tone.Success.ToColor(); break;
-				default: e.CellStyle.ForeColor = Tone.Primary.ToColor(); break;
-			}
-		}
 	}
 }

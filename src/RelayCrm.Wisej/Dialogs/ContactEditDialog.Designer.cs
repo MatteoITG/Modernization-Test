@@ -244,6 +244,7 @@ namespace RelayCrm.Dialogs
 			// buttonSave
 			//
 			this.buttonSave.Location = new System.Drawing.Point(236, 346);
+			this.buttonSave.CssClass = "relay-primary";
 			this.buttonSave.Name = "buttonSave";
 			this.buttonSave.Size = new System.Drawing.Size(92, 27);
 			this.buttonSave.TabIndex = 21;
@@ -254,6 +255,7 @@ namespace RelayCrm.Dialogs
 			//
 			this.buttonCancel.DialogResult = Wisej.Web.DialogResult.Cancel;
 			this.buttonCancel.Location = new System.Drawing.Point(336, 346);
+			this.buttonCancel.CssClass = "relay-secondary";
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.Size = new System.Drawing.Size(92, 27);
 			this.buttonCancel.TabIndex = 22;

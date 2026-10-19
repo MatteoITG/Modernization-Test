@@ -29,35 +29,31 @@ namespace RelayCrm.Views
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle1 = new Wisej.Web.DataGridViewCellStyle();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CompaniesView));
+			Wisej.Web.ComponentTool componentTool1 = new Wisej.Web.ComponentTool();
+			Wisej.Web.Segment segment1 = new Wisej.Web.Segment();
+			Wisej.Web.Segment segment2 = new Wisej.Web.Segment();
+			Wisej.Web.Segment segment3 = new Wisej.Web.Segment();
+			Wisej.Web.Segment segment4 = new Wisej.Web.Segment();
 			Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle2 = new Wisej.Web.DataGridViewCellStyle();
 			Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle3 = new Wisej.Web.DataGridViewCellStyle();
 			Wisej.Web.DataGridViewCellStyle dataGridViewCellStyle4 = new Wisej.Web.DataGridViewCellStyle();
-			this.linkEmpty = new Wisej.Web.LinkLabel();
 			this.grid = new Wisej.Web.DataGridView();
-			this.colName = new Wisej.Web.DataGridViewTextBoxColumn();
+			this.colName = new Wisej.Web.DataGridViewAvatarColumn();
 			this.colIndustry = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colCountry = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colCity = new Wisej.Web.DataGridViewTextBoxColumn();
-			this.colOwner = new Wisej.Web.DataGridViewTextBoxColumn();
+			this.colOwner = new Wisej.Web.DataGridViewAvatarColumn();
 			this.colContacts = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colOpenValue = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colWonRevenue = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colWonTrend = new Wisej.Web.DataGridViewSparklineColumn();
-			this.colTag = new Wisej.Web.DataGridViewTextBoxColumn();
+			this.colTag = new Wisej.Web.DataGridViewChipColumn();
 			this.colTags = new Wisej.Web.DataGridViewTextBoxColumn();
-			this.filterStrip = new Wisej.Web.ToolBar();
-			this.labelSearch = new Wisej.Web.ToolBarButton();
+			this.filterStrip = new Wisej.Web.Panel();
 			this.textSearch = new Wisej.Web.TextBox();
-			this.textSearchHost = new Wisej.Web.ToolBarControl();
-			this.filterSeparator1 = new Wisej.Web.ToolBarButton();
-			this.quickAll = new Wisej.Web.ToolBarButton();
-			this.quickMine = new Wisej.Web.ToolBarButton();
-			this.quickOpenDeals = new Wisej.Web.ToolBarButton();
-			this.quickCustomers = new Wisej.Web.ToolBarButton();
-			this.filterSeparator2 = new Wisej.Web.ToolBarButton();
-			this.labelAdvanced = new Wisej.Web.ToolBarButton();
-			this.buttonClearFilter = new Wisej.Web.ToolBarButton();
+			this.labelAdvanced = new Wisej.Web.Label();
+			this.buttonClearFilter = new Wisej.Web.Button();
 			this.toolStrip = new Wisej.Web.ToolBar();
 			this.buttonNew = new Wisej.Web.ToolBarButton();
 			this.buttonEdit = new Wisej.Web.ToolBarButton();
@@ -77,26 +73,27 @@ namespace RelayCrm.Views
 			this.menuSeparator1 = new Wisej.Web.MenuItem();
 			this.menuEdit = new Wisej.Web.MenuItem();
 			this.menuDelete = new Wisej.Web.MenuItem();
+			this.segmentedQuick = new Wisej.Web.ChipGroup();
+			this.emptyState = new Wisej.Web.EmptyState();
 			((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
 			this.filterStrip.SuspendLayout();
 			this.toolStrip.SuspendLayout();
 			this.panelPaging.SuspendLayout();
 			this.SuspendLayout();
 			//
-			// linkEmpty
+			// emptyState
 			//
-			this.linkEmpty.BackColor = System.Drawing.SystemColors.Window;
-			this.linkEmpty.Dock = Wisej.Web.DockStyle.Fill;
-			this.linkEmpty.LinkArea = new Wisej.Web.LinkArea(0, 0);
-			this.linkEmpty.Location = new System.Drawing.Point(0, 54);
-			this.linkEmpty.Name = "linkEmpty";
-			this.linkEmpty.Size = new System.Drawing.Size(900, 500);
-			this.linkEmpty.TabIndex = 3;
-			this.linkEmpty.TabStop = true;
-			this.linkEmpty.Text = "No companies match the search and the filters. Clear the filters";
-			this.linkEmpty.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.linkEmpty.Visible = false;
-			this.linkEmpty.LinkClicked += new Wisej.Web.LinkLabelLinkClickedEventHandler(this.linkEmpty_LinkClicked);
+			this.emptyState.ActionText = "Clear the filters";
+			this.emptyState.Dock = Wisej.Web.DockStyle.Fill;
+			this.emptyState.Icon = "resource.wx/Wisej.Ext.BootstrapIcons/building.svg";
+			this.emptyState.Kind = Wisej.Web.EmptyStateKind.NoResults;
+			this.emptyState.Location = new System.Drawing.Point(0, 100);
+			this.emptyState.Name = "emptyState";
+			this.emptyState.Size = new System.Drawing.Size(1000, 424);
+			this.emptyState.TabIndex = 3;
+			this.emptyState.Title = "No companies match the search and the filters.";
+			this.emptyState.Visible = false;
+			this.emptyState.ActionClick += new System.EventHandler(this.emptyState_ActionClick);
 			//
 			// grid
 			//
@@ -131,16 +128,20 @@ namespace RelayCrm.Views
 			this.grid.CellMouseDown += new Wisej.Web.DataGridViewCellMouseEventHandler(this.grid_CellMouseDown);
 			this.grid.KeyDown += new Wisej.Web.KeyEventHandler(this.grid_KeyDown);
 			this.grid.SelectionChanged += new System.EventHandler(this.grid_SelectionChanged);
+			this.grid.BorderStyle = Wisej.Web.BorderStyle.None;
+			this.grid.CssClass = "relay-grid";
+			this.grid.RowTemplate.Height = 48;
 			//
 			// colName
 			//
-			dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.colName.DataPropertyName = "Name";
-			this.colName.DefaultCellStyle = dataGridViewCellStyle1;
 			this.colName.AutoSizeMode = Wisej.Web.DataGridViewAutoSizeColumnMode.Fill;
 			this.colName.MinimumWidth = 160;
 			this.colName.HeaderText = "Company";
 			this.colName.Name = "colName";
+			this.colName.Shape = Wisej.Web.AvatarShape.Rounded;
+			this.colName.TextMember = "Name";
+			this.colName.SubTextMember = "Industry";
 			//
 			// colIndustry
 			//
@@ -168,7 +169,8 @@ namespace RelayCrm.Views
 			this.colOwner.DataPropertyName = "OwnerName";
 			this.colOwner.HeaderText = "Owner";
 			this.colOwner.Name = "colOwner";
-			this.colOwner.Width = 120;
+			this.colOwner.Width = 150;
+			this.colOwner.TextMember = "OwnerName";
 			//
 			// colContacts
 			//
@@ -212,7 +214,8 @@ namespace RelayCrm.Views
 			this.colTag.DataPropertyName = "FirstTag";
 			this.colTag.HeaderText = "Tag";
 			this.colTag.Name = "colTag";
-			this.colTag.Width = 80;
+			this.colTag.Width = 110;
+			this.colTag.Variant = Wisej.Web.ChipVariant.Soft;
 			//
 			// colTags
 			//
@@ -224,87 +227,82 @@ namespace RelayCrm.Views
 			//
 			// filterStrip
 			//
-			this.filterStrip.Buttons.AddRange(new Wisej.Web.ToolBarButton[] {
-			this.labelSearch,
-			this.textSearchHost,
-			this.filterSeparator1,
-			this.quickAll,
-			this.quickMine,
-			this.quickOpenDeals,
-			this.quickCustomers,
-			this.filterSeparator2,
-			this.labelAdvanced,
-			this.buttonClearFilter});
-			this.filterStrip.Location = new System.Drawing.Point(0, 27);
+			this.filterStrip.Controls.Add(this.labelAdvanced);
+			this.filterStrip.Controls.Add(this.buttonClearFilter);
+			this.filterStrip.Controls.Add(this.segmentedQuick);
+			this.filterStrip.Controls.Add(this.textSearch);
+			this.filterStrip.Dock = Wisej.Web.DockStyle.Top;
+			this.filterStrip.Location = new System.Drawing.Point(0, 44);
 			this.filterStrip.Name = "filterStrip";
-			this.filterStrip.Padding = new Wisej.Web.Padding(4, 2, 4, 2);
-			this.filterStrip.Size = new System.Drawing.Size(800, 27);
+			this.filterStrip.ResponsiveProfiles.Add(((Wisej.Base.ResponsiveProfile)(resources.GetObject("filterStrip.ResponsiveProfiles"))));
+			this.filterStrip.ResponsiveProfiles.Add(((Wisej.Base.ResponsiveProfile)(resources.GetObject("filterStrip.ResponsiveProfiles1"))));
+			this.filterStrip.Padding = new Wisej.Web.Padding(12, 8, 12, 8);
+			this.filterStrip.Size = new System.Drawing.Size(1000, 56);
 			this.filterStrip.TabIndex = 1;
-			this.filterStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
-			//
-			// labelSearch
-			//
-			this.labelSearch.Name = "labelSearch";
-			this.labelSearch.Text = "Search:";
 			//
 			// textSearch
 			//
-			this.textSearch.BorderStyle = Wisej.Web.BorderStyle.Solid;
-			this.textSearch.Size = new System.Drawing.Size(240, 23);
+			this.textSearch.CssClass = "relay-search";
+			this.textSearch.Dock = Wisej.Web.DockStyle.Left;
+			this.textSearch.Location = new System.Drawing.Point(12, 8);
 			this.textSearch.Name = "textSearch";
-			this.textSearchHost.Control = this.textSearch;
-			this.textSearchHost.Name = "textSearchHost";
+			this.textSearch.ResponsiveProfiles.Add(((Wisej.Base.ResponsiveProfile)(resources.GetObject("textSearch.ResponsiveProfiles"))));
+			this.textSearch.ResponsiveProfiles.Add(((Wisej.Base.ResponsiveProfile)(resources.GetObject("textSearch.ResponsiveProfiles1"))));
+			this.textSearch.Size = new System.Drawing.Size(280, 40);
+			this.textSearch.TabIndex = 0;
+			componentTool1.ImageSource = "resource.wx/Wisej.Ext.BootstrapIcons/x-lg.svg";
+			componentTool1.Name = "clear";
+			componentTool1.ToolTipText = "Clear the search";
+			this.textSearch.Tools.AddRange(new Wisej.Web.ComponentTool[] {
+			componentTool1});
+			this.textSearch.Watermark = "Name, industry, place, owner or tag";
 			this.textSearch.TextChanged += new System.EventHandler(this.textSearch_TextChanged);
+			this.textSearch.ToolClick += new Wisej.Web.ToolClickEventHandler(this.textSearch_ToolClick);
 			//
-			// filterSeparator1
+			// segmentedQuick
 			//
-			this.filterSeparator1.Name = "filterSeparator1";
-			this.filterSeparator1.Style = Wisej.Web.ToolBarButtonStyle.Separator;
-			//
-			// quickAll
-			//
-			this.quickAll.Name = "quickAll";
-			this.quickAll.Style = Wisej.Web.ToolBarButtonStyle.ToggleButton;
-			this.quickAll.Text = "All";
-			this.quickAll.Click += new System.EventHandler(this.quickFilter_Click);
-			//
-			// quickMine
-			//
-			this.quickMine.Name = "quickMine";
-			this.quickMine.Style = Wisej.Web.ToolBarButtonStyle.ToggleButton;
-			this.quickMine.Text = "My companies";
-			this.quickMine.Click += new System.EventHandler(this.quickFilter_Click);
-			//
-			// quickOpenDeals
-			//
-			this.quickOpenDeals.Name = "quickOpenDeals";
-			this.quickOpenDeals.Style = Wisej.Web.ToolBarButtonStyle.ToggleButton;
-			this.quickOpenDeals.Text = "With open deals";
-			this.quickOpenDeals.Click += new System.EventHandler(this.quickFilter_Click);
-			//
-			// quickCustomers
-			//
-			this.quickCustomers.Name = "quickCustomers";
-			this.quickCustomers.Style = Wisej.Web.ToolBarButtonStyle.ToggleButton;
-			this.quickCustomers.Text = "Customers";
-			this.quickCustomers.Click += new System.EventHandler(this.quickFilter_Click);
-			//
-			// filterSeparator2
-			//
-			this.filterSeparator2.Name = "filterSeparator2";
-			this.filterSeparator2.Style = Wisej.Web.ToolBarButtonStyle.Separator;
+			this.segmentedQuick.Dock = Wisej.Web.DockStyle.Left;
+			segment1.Text = "All";
+			segment2.Text = "My companies";
+			segment3.Text = "With open deals";
+			segment4.Text = "Customers";
+			this.segmentedQuick.Items.Add(segment1);
+			this.segmentedQuick.Items.Add(segment2);
+			this.segmentedQuick.Items.Add(segment3);
+			this.segmentedQuick.Items.Add(segment4);
+			this.segmentedQuick.Location = new System.Drawing.Point(292, 8);
+			this.segmentedQuick.Name = "segmentedQuick";
+			this.segmentedQuick.ResponsiveProfiles.Add(((Wisej.Base.ResponsiveProfile)(resources.GetObject("segmentedQuick.ResponsiveProfiles"))));
+			this.segmentedQuick.ResponsiveProfiles.Add(((Wisej.Base.ResponsiveProfile)(resources.GetObject("segmentedQuick.ResponsiveProfiles1"))));
+			this.segmentedQuick.Padding = new Wisej.Web.Padding(12, 0, 0, 0);
+			this.segmentedQuick.ShowCounts = true;
+			this.segmentedQuick.Size = new System.Drawing.Size(470, 40);
+			this.segmentedQuick.TabIndex = 1;
+			this.segmentedQuick.SelectedIndexChanged += new System.EventHandler(this.segmentedQuick_SelectedIndexChanged);
 			//
 			// labelAdvanced
 			//
-			this.labelAdvanced.ForeColor = System.Drawing.SystemColors.HotTrack;
+			this.labelAdvanced.AutoEllipsis = true;
+			this.labelAdvanced.CssClass = "relay-muted";
+			this.labelAdvanced.Dock = Wisej.Web.DockStyle.Fill;
+			this.labelAdvanced.Location = new System.Drawing.Point(762, 8);
 			this.labelAdvanced.Name = "labelAdvanced";
-			this.labelAdvanced.Text = "";
+			this.labelAdvanced.Padding = new Wisej.Web.Padding(12, 0, 0, 0);
+			this.labelAdvanced.Size = new System.Drawing.Size(106, 40);
+			this.labelAdvanced.TabIndex = 2;
+			this.labelAdvanced.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			//
 			// buttonClearFilter
 			//
-			this.buttonClearFilter.Visible = false;
+			this.buttonClearFilter.CssClass = "relay-secondary";
+			this.buttonClearFilter.Dock = Wisej.Web.DockStyle.Right;
+			this.buttonClearFilter.ImageSource = "resource.wx/Wisej.Ext.BootstrapIcons/x-circle.svg";
+			this.buttonClearFilter.Location = new System.Drawing.Point(868, 8);
 			this.buttonClearFilter.Name = "buttonClearFilter";
+			this.buttonClearFilter.Size = new System.Drawing.Size(120, 40);
+			this.buttonClearFilter.TabIndex = 3;
 			this.buttonClearFilter.Text = "Clear filters";
+			this.buttonClearFilter.Visible = false;
 			this.buttonClearFilter.Click += new System.EventHandler(this.buttonClearFilter_Click);
 			//
 			// toolStrip
@@ -321,9 +319,10 @@ namespace RelayCrm.Views
 			this.toolStrip.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip.Name = "toolStrip";
 			this.toolStrip.Padding = new Wisej.Web.Padding(4, 2, 4, 2);
-			this.toolStrip.Size = new System.Drawing.Size(800, 27);
+			this.toolStrip.Size = new System.Drawing.Size(1000, 44);
 			this.toolStrip.TabIndex = 0;
 			this.toolStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
+			this.toolStrip.CssClass = "relay-toolbar";
 			//
 			// buttonNew
 			//
@@ -403,6 +402,7 @@ namespace RelayCrm.Views
 			this.buttonNext.TabIndex = 2;
 			this.buttonNext.Text = "Next ›";
 			this.buttonNext.Click += new System.EventHandler(this.buttonNext_Click);
+			this.buttonNext.CssClass = "relay-secondary";
 			//
 			// buttonPrevious
 			//
@@ -413,6 +413,7 @@ namespace RelayCrm.Views
 			this.buttonPrevious.TabIndex = 1;
 			this.buttonPrevious.Text = "‹ Previous";
 			this.buttonPrevious.Click += new System.EventHandler(this.buttonPrevious_Click);
+			this.buttonPrevious.CssClass = "relay-secondary";
 			//
 			// labelPage
 			//
@@ -422,6 +423,7 @@ namespace RelayCrm.Views
 			this.labelPage.Size = new System.Drawing.Size(800, 18);
 			this.labelPage.TabIndex = 0;
 			this.labelPage.Text = "0 of 0";
+			this.labelPage.CssClass = "relay-muted";
 			//
 			// contextMenu
 			//
@@ -459,13 +461,13 @@ namespace RelayCrm.Views
 			//
 			// CompaniesView
 			//
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
-			this.Controls.Add(this.linkEmpty);
+			this.BackColor = System.Drawing.Color.White;
+			this.Controls.Add(this.emptyState);
 			this.Controls.Add(this.grid);
 			this.Controls.Add(this.filterStrip);
 			this.Controls.Add(this.toolStrip);
 			this.Controls.Add(this.panelPaging);
+			this.CssClass = "relay-card";
 			this.Name = "CompaniesView";
 			this.Size = new System.Drawing.Size(1000, 600);
 			this.Load += new System.EventHandler(this.CompaniesView_Load);
@@ -474,7 +476,6 @@ namespace RelayCrm.Views
 			this.toolStrip.ResumeLayout(false);
 			this.toolStrip.PerformLayout();
 			this.filterStrip.ResumeLayout(false);
-			this.filterStrip.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -483,31 +484,22 @@ namespace RelayCrm.Views
 
 		#endregion
 
-		private Wisej.Web.LinkLabel linkEmpty;
 		private Wisej.Web.DataGridView grid;
-		private Wisej.Web.DataGridViewTextBoxColumn colName;
+		private Wisej.Web.DataGridViewAvatarColumn colName;
 		private Wisej.Web.DataGridViewTextBoxColumn colIndustry;
 		private Wisej.Web.DataGridViewTextBoxColumn colCountry;
 		private Wisej.Web.DataGridViewTextBoxColumn colCity;
-		private Wisej.Web.DataGridViewTextBoxColumn colOwner;
+		private Wisej.Web.DataGridViewAvatarColumn colOwner;
 		private Wisej.Web.DataGridViewTextBoxColumn colContacts;
 		private Wisej.Web.DataGridViewTextBoxColumn colOpenValue;
 		private Wisej.Web.DataGridViewTextBoxColumn colWonRevenue;
 		private Wisej.Web.DataGridViewSparklineColumn colWonTrend;
-		private Wisej.Web.DataGridViewTextBoxColumn colTag;
+		private Wisej.Web.DataGridViewChipColumn colTag;
 		private Wisej.Web.DataGridViewTextBoxColumn colTags;
-		private Wisej.Web.ToolBar filterStrip;
-		private Wisej.Web.ToolBarButton labelSearch;
+		private Wisej.Web.Panel filterStrip;
 		private Wisej.Web.TextBox textSearch;
-		private Wisej.Web.ToolBarControl textSearchHost;
-		private Wisej.Web.ToolBarButton filterSeparator1;
-		private Wisej.Web.ToolBarButton quickAll;
-		private Wisej.Web.ToolBarButton quickMine;
-		private Wisej.Web.ToolBarButton quickOpenDeals;
-		private Wisej.Web.ToolBarButton quickCustomers;
-		private Wisej.Web.ToolBarButton filterSeparator2;
-		private Wisej.Web.ToolBarButton labelAdvanced;
-		private Wisej.Web.ToolBarButton buttonClearFilter;
+		private Wisej.Web.Label labelAdvanced;
+		private Wisej.Web.Button buttonClearFilter;
 		private Wisej.Web.ToolBar toolStrip;
 		private Wisej.Web.ToolBarButton buttonNew;
 		private Wisej.Web.ToolBarButton buttonEdit;
@@ -527,5 +519,7 @@ namespace RelayCrm.Views
 		private Wisej.Web.MenuItem menuSeparator1;
 		private Wisej.Web.MenuItem menuEdit;
 		private Wisej.Web.MenuItem menuDelete;
+		private Wisej.Web.ChipGroup segmentedQuick;
+		private Wisej.Web.EmptyState emptyState;
 	}
 }

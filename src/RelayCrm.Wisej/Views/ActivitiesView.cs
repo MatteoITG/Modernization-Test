@@ -20,6 +20,10 @@ namespace RelayCrm.Views
 		// the activities of the months the calendar shows.
 		private List<ActivityRow> calendarRows = new List<ActivityRow>();
 
+		// the day the timeline next to the calendar shows, and the activity clicked last in the calendar.
+		private DateTime selectedDay = DateTime.Today;
+		private ActivityRow calendarRow;
+
 		public ActivitiesView()
 		{
 			InitializeComponent();
@@ -27,11 +31,9 @@ namespace RelayCrm.Views
 			this.grid.AutoGenerateColumns = false;
 			this.grid.DefaultCellStyle.FormatProvider = Fmt.Culture;
 			IconImages.Apply(this.toolStrip);
-			this.listViewDay.SmallImageList = IconImages.List(16, "telephone", "envelope", "people", "sticky");
 
 			this.comboType.Items.AddRange(new object[] { "All types", "Call", "Email", "Meeting", "Note" });
 			this.comboType.SelectedIndex = 0;
-			this.monthCalendar.SetDate(DateTime.Today);
 			LoadUsers();
 		}
 
@@ -97,55 +99,62 @@ namespace RelayCrm.Views
 
 		#region Calendar
 
-		// loads the activities of the months the calendar shows, bolds their days and lists the selected days.
+		// loads the activities of the range the scheduler shows and lists the selected day.
 		private void LoadCalendar()
 		{
-			var range = this.monthCalendar.GetDisplayRange();
-			this.loadedStart = range.Start;
-			this.loadedEnd = range.End;
-			var from = range.Start.Date;
-			var to = range.End.Date.AddDays(1);
+			var from = this.schedulerView.RangeStart.Date;
+			var to = this.schedulerView.RangeEnd.Date.AddDays(1);
 
 			List<ActivityRow> rows = null;
 			if (!Notify.Try(() => rows = ActivityService.Range(from, to, this.SelectedType, this.SelectedUserId), "Loading the calendar"))
 				return;
 
 			this.calendarRows = rows;
-			this.monthCalendar.BoldedDates = rows.Select(r => r.Date.Date).Distinct().ToArray();
+			var now = DateTime.Now;
+			this.schedulerView.Appointments.Clear();
+			foreach (var row in rows)
+			{
+				this.schedulerView.Appointments.Add(new SchedulerAppointment
+				{
+					Id = row.Id.ToString(System.Globalization.CultureInfo.InvariantCulture),
+					Start = row.Date,
+					End = row.End,
+					Text = row.TypeName + ": " + row.Subject,
+					// planned activities stand out.
+					Tone = row.Date > now ? MeterTone.Primary : row.Type == ActivityType.Meeting ? MeterTone.Success : MeterTone.Neutral,
+					Tag = row,
+				});
+			}
 			this.labelCount.Text = rows.Count == 1 ? "1 activity in view" : rows.Count + " activities in view";
 			ShowSelectedDays();
 		}
 
 		private void ShowSelectedDays()
 		{
-			var start = this.monthCalendar.SelectionStart.Date;
-			var end = this.monthCalendar.SelectionEnd.Date.AddDays(1);
+			var start = this.selectedDay;
+			var end = start.AddDays(1);
 			var rows = this.calendarRows.Where(r => r.Date >= start && r.Date < end).OrderBy(r => r.Date).ToList();
-			var oneDay = end == start.AddDays(1);
 
-			this.labelDay.Text = (oneDay
-				? start.ToString("dddd, MMMM d, yyyy", Fmt.Culture)
-				: start.ToString("MMM d", Fmt.Culture) + " – " + end.AddDays(-1).ToString("MMM d, yyyy", Fmt.Culture))
-				+ "   ·   " + (rows.Count == 0 ? "no activities" : rows.Count == 1 ? "1 activity" : rows.Count + " activities");
+			this.labelDay.Text = start.ToString("dddd, MMMM d", Fmt.Culture)
+				+ "  ·  " + (rows.Count == 0 ? "no activities" : rows.Count == 1 ? "1 activity" : rows.Count + " activities");
 
 			var now = DateTime.Now;
-			this.listViewDay.BeginUpdate();
-			this.listViewDay.Items.Clear();
+			this.timelineDay.Items.Clear();
 			foreach (var row in rows)
 			{
-				var time = oneDay ? row.Date.ToString("HH:mm", Fmt.Culture) : row.Date.ToString("ddd d, HH:mm", Fmt.Culture);
-				var item = new ListViewItem(time, Icons.NameOf(row.TypeIcon)) { Tag = row, ToolTipText = row.Body };
-				item.SubItems.Add(row.TypeName);
-				item.SubItems.Add(row.Subject ?? "");
-				item.SubItems.Add(row.RelatedText);
-				item.SubItems.Add(row.UserName);
-				item.SubItems.Add(row.Duration > 0 ? row.Duration + " min" : "");
-				// planned activities stand out.
-				if (row.Date > now)
-					item.ForeColor = Tone.Primary.ToColor();
-				this.listViewDay.Items.Add(item);
+				this.timelineDay.Items.Add(new TimelineItem
+				{
+					Time = row.Date,
+					Title = row.Subject ?? row.TypeName,
+					Description = row.TypeName + (string.IsNullOrEmpty(row.RelatedText) ? "" : " · " + row.RelatedText)
+						+ " · " + row.UserName + (row.Duration > 0 ? " · " + row.Duration + " min" : ""),
+					Icon = row.TypeIcon,
+					// planned activities stand out.
+					Tone = row.Date > now ? TimelineTone.Primary : TimelineTone.Neutral,
+					Tag = row,
+				});
 			}
-			this.listViewDay.EndUpdate();
+			this.emptyDay.Visible = rows.Count == 0;
 		}
 
 		#endregion
@@ -157,7 +166,7 @@ namespace RelayCrm.Views
 				return;
 
 			this.grid.DataSource = new SortableBindingList<ActivityRow>(rows);
-			this.labelEmpty.Visible = rows.Count == 0;
+			this.emptyList.Visible = rows.Count == 0;
 			this.labelCount.Text = rows.Count == 1 ? "1 activity" : rows.Count + " activities";
 		}
 
@@ -196,7 +205,7 @@ namespace RelayCrm.Views
 			get
 			{
 				if (this.CalendarMode)
-					return this.listViewDay.SelectedItems.Count > 0 ? this.listViewDay.SelectedItems[0].Tag as ActivityRow : null;
+					return this.calendarRow;
 				return GridHelper.Current<ActivityRow>(this.grid);
 			}
 		}
@@ -220,8 +229,8 @@ namespace RelayCrm.Views
 
 		private void buttonLogOnDay_Click(object sender, EventArgs e)
 		{
-			// a day of the calendar: propose the morning, or now when it is today.
-			var day = this.monthCalendar.SelectionStart.Date;
+			// the day of the timeline: propose the morning, or now when it is today.
+			var day = this.selectedDay;
 			var date = day == DateTime.Today ? DateTime.Now : day.AddHours(9);
 			LogActivity(date, this.SelectedType ?? ActivityType.Meeting);
 		}
@@ -247,29 +256,38 @@ namespace RelayCrm.Views
 			RefreshData();
 		}
 
-		private void monthCalendar_DateChanged(object sender, DateRangeEventArgs e)
+		private void schedulerView_RangeChanged(object sender, EventArgs e)
 		{
-			if (!this.ready)
-				return;
-
-			// paging to another month needs its activities; a new selection in the same months only filters.
-			var range = this.monthCalendar.GetDisplayRange();
-			var loaded = range.Start == this.loadedStart && range.End == this.loadedEnd;
-			this.loadedStart = range.Start;
-			this.loadedEnd = range.End;
-			if (loaded)
-				ShowSelectedDays();
-			else
+			if (this.ready && this.CalendarMode)
 				LoadCalendar();
 		}
 
-		// the months whose activities are loaded.
-		private DateTime loadedStart, loadedEnd;
-
-		private void listViewDay_ItemActivate(object sender, EventArgs e)
+		private void schedulerView_AppointmentClick(object sender, SchedulerAppointmentEventArgs e)
 		{
-			if (this.SelectedRow != null)
-				OpenRelated(this.SelectedRow);
+			this.calendarRow = e.Appointment?.Tag as ActivityRow;
+			this.selectedDay = e.OccurrenceStart.Date;
+			ShowSelectedDays();
+		}
+
+		private void schedulerView_AppointmentDoubleClick(object sender, SchedulerAppointmentEventArgs e)
+		{
+			if (e.Appointment?.Tag is ActivityRow row)
+				OpenRelated(row);
+		}
+
+		private void schedulerView_SlotDoubleClick(object sender, SchedulerSlotEventArgs e)
+		{
+			// a day of the month: propose the morning; a slot of the week or day view: its time.
+			this.selectedDay = e.Start.Date;
+			ShowSelectedDays();
+			LogActivity(e.Start.TimeOfDay == TimeSpan.Zero ? e.Start.AddHours(9) : e.Start, this.SelectedType ?? ActivityType.Meeting);
+		}
+
+		private void timelineDay_ItemClick(object sender, TimelineItemEventArgs e)
+		{
+			this.calendarRow = e.Item?.Tag as ActivityRow;
+			if (this.calendarRow != null)
+				OpenRelated(this.calendarRow);
 		}
 
 		private void grid_CellContentClick(object sender, DataGridViewCellEventArgs e)

@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="panelFilters.ResponsiveProfiles" type="Wisej.Base.ResponsiveProfile, Wisej.Framework" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        PFJlc3BvbnNpdmVQcm9maWxlIE5hbWU9IlBob25lIj48U2l6ZSBUeXBlPSJTaXplIj4zNzUsIDEwNDwv
+        U2l6ZT48L1Jlc3BvbnNpdmVQcm9maWxlPg==
+</value>
+  </data>
+  <data name="panelFilters.ResponsiveProfiles1" type="Wisej.Base.ResponsiveProfile, Wisej.Framework" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        PFJlc3BvbnNpdmVQcm9maWxlIE5hbWU9IlRhYmxldCI+PFNpemUgVHlwZT0iU2l6ZSI+MTAwMCwgNTY8
+        L1NpemU+PC9SZXNwb25zaXZlUHJvZmlsZT4=
+</value>
+  </data>
+  <data name="textSearch.ResponsiveProfiles" type="Wisej.Base.ResponsiveProfile, Wisej.Framework" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        PFJlc3BvbnNpdmVQcm9maWxlIE5hbWU9IlBob25lIj48RG9jayBUeXBlPSJXaXNlai5XZWIuRG9ja1N0
+        eWxlLCBXaXNlai5GcmFtZXdvcmsiPlRvcDwvRG9jaz48L1Jlc3BvbnNpdmVQcm9maWxlPg==
+</value>
+  </data>
+  <data name="textSearch.ResponsiveProfiles1" type="Wisej.Base.ResponsiveProfile, Wisej.Framework" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        PFJlc3BvbnNpdmVQcm9maWxlIE5hbWU9IlRhYmxldCI+PERvY2sgVHlwZT0iV2lzZWouV2ViLkRvY2tT
+        dHlsZSwgV2lzZWouRnJhbWV3b3JrIj5MZWZ0PC9Eb2NrPjwvUmVzcG9uc2l2ZVByb2ZpbGU+
+</value>
+  </data>
+  <data name="segmentedQuick.ResponsiveProfiles" type="Wisej.Base.ResponsiveProfile, Wisej.Framework" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        PFJlc3BvbnNpdmVQcm9maWxlIE5hbWU9IlBob25lIj48RG9jayBUeXBlPSJXaXNlai5XZWIuRG9ja1N0
+        eWxlLCBXaXNlai5GcmFtZXdvcmsiPlRvcDwvRG9jaz48UGFkZGluZyBUeXBlPSJXaXNlai5XZWIuUGFk
+        ZGluZywgV2lzZWouRnJhbWV3b3JrIj4wLCA4LCAwLCAwPC9QYWRkaW5nPjwvUmVzcG9uc2l2ZVByb2Zp
+        bGU+
+</value>
+  </data>
+  <data name="segmentedQuick.ResponsiveProfiles1" type="Wisej.Base.ResponsiveProfile, Wisej.Framework" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        PFJlc3BvbnNpdmVQcm9maWxlIE5hbWU9IlRhYmxldCI+PERvY2sgVHlwZT0iV2lzZWouV2ViLkRvY2tT
+        dHlsZSwgV2lzZWouRnJhbWV3b3JrIj5MZWZ0PC9Eb2NrPjxQYWRkaW5nIFR5cGU9Ildpc2VqLldlYi5Q
+        YWRkaW5nLCBXaXNlai5GcmFtZXdvcmsiPjEyLCAwLCAwLCAwPC9QYWRkaW5nPjwvUmVzcG9uc2l2ZVBy
+        b2ZpbGU+
+</value>
+  </data>
+</root>

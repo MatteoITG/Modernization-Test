@@ -86,13 +86,13 @@ namespace RelayCrm.Views
 			this.colReason = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colReasonDeals = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colReasonValue = new Wisej.Web.DataGridViewTextBoxColumn();
-			this.colReasonShare = new Wisej.Web.DataGridViewTextBoxColumn();
+			this.colReasonShare = new Wisej.Web.DataGridViewMeterColumn();
 			this.tabActivity = new Wisej.Web.TabPage();
 			this.splitActivity = new Wisej.Web.SplitContainer();
 			this.labelActivityDescription = new Wisej.Web.Label();
 			this.chartActivity = new Wisej.Web.ChartView();
 			this.gridActivity = new Wisej.Web.DataGridView();
-			this.colActivityUser = new Wisej.Web.DataGridViewTextBoxColumn();
+			this.colActivityUser = new Wisej.Web.DataGridViewAvatarColumn();
 			this.colActivityCalls = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colActivityEmails = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colActivityMeetings = new Wisej.Web.DataGridViewTextBoxColumn();
@@ -232,6 +232,9 @@ namespace RelayCrm.Views
 			this.gridForecast.SelectionMode = Wisej.Web.DataGridViewSelectionMode.FullRowSelect;
 			this.gridForecast.Size = new System.Drawing.Size(400, 200);
 			this.gridForecast.TabIndex = 0;
+			this.gridForecast.BorderStyle = Wisej.Web.BorderStyle.None;
+			this.gridForecast.CssClass = "relay-grid";
+			this.gridForecast.RowTemplate.Height = 36;
 			//
 			// colForecastMonth
 			//
@@ -391,6 +394,9 @@ namespace RelayCrm.Views
 			this.gridWinLoss.SelectionMode = Wisej.Web.DataGridViewSelectionMode.FullRowSelect;
 			this.gridWinLoss.Size = new System.Drawing.Size(400, 200);
 			this.gridWinLoss.TabIndex = 0;
+			this.gridWinLoss.BorderStyle = Wisej.Web.BorderStyle.None;
+			this.gridWinLoss.CssClass = "relay-grid";
+			this.gridWinLoss.RowTemplate.Height = 36;
 			//
 			// colWinLossMonth
 			//
@@ -468,6 +474,9 @@ namespace RelayCrm.Views
 			this.gridReasons.SelectionMode = Wisej.Web.DataGridViewSelectionMode.FullRowSelect;
 			this.gridReasons.Size = new System.Drawing.Size(400, 200);
 			this.gridReasons.TabIndex = 0;
+			this.gridReasons.BorderStyle = Wisej.Web.BorderStyle.None;
+			this.gridReasons.CssClass = "relay-grid";
+			this.gridReasons.RowTemplate.Height = 36;
 			//
 			// colReason
 			//
@@ -501,10 +510,11 @@ namespace RelayCrm.Views
 			dataGridViewCellStyle11.Alignment = Wisej.Web.DataGridViewContentAlignment.MiddleRight;
 			dataGridViewCellStyle11.Format = "0.#'%'";
 			this.colReasonShare.DataPropertyName = "Share";
-			this.colReasonShare.DefaultCellStyle = dataGridViewCellStyle11;
 			this.colReasonShare.HeaderText = "Share";
 			this.colReasonShare.Name = "colReasonShare";
-			this.colReasonShare.Width = 60;
+			this.colReasonShare.Width = 110;
+			this.colReasonShare.Maximum = 100D;
+			this.colReasonShare.ShowText = true;
 			//
 			// tabActivity
 			//
@@ -591,6 +601,9 @@ namespace RelayCrm.Views
 			this.gridActivity.SelectionMode = Wisej.Web.DataGridViewSelectionMode.FullRowSelect;
 			this.gridActivity.Size = new System.Drawing.Size(400, 200);
 			this.gridActivity.TabIndex = 0;
+			this.gridActivity.BorderStyle = Wisej.Web.BorderStyle.None;
+			this.gridActivity.CssClass = "relay-grid";
+			this.gridActivity.RowTemplate.Height = 36;
 			//
 			// colActivityUser
 			//
@@ -599,6 +612,7 @@ namespace RelayCrm.Views
 			this.colActivityUser.MinimumWidth = 140;
 			this.colActivityUser.HeaderText = "User";
 			this.colActivityUser.Name = "colActivityUser";
+			this.colActivityUser.TextMember = "User";
 			//
 			// colActivityCalls
 			//
@@ -721,6 +735,9 @@ namespace RelayCrm.Views
 			this.gridLeadSource.SelectionMode = Wisej.Web.DataGridViewSelectionMode.FullRowSelect;
 			this.gridLeadSource.Size = new System.Drawing.Size(400, 200);
 			this.gridLeadSource.TabIndex = 0;
+			this.gridLeadSource.BorderStyle = Wisej.Web.BorderStyle.None;
+			this.gridLeadSource.CssClass = "relay-grid";
+			this.gridLeadSource.RowTemplate.Height = 36;
 			//
 			// colSource
 			//
@@ -770,6 +787,7 @@ namespace RelayCrm.Views
 			this.toolStrip.Size = new System.Drawing.Size(800, 27);
 			this.toolStrip.TabIndex = 0;
 			this.toolStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
+			this.toolStrip.CssClass = "relay-toolbar";
 			//
 			// labelSummary
 			//
@@ -792,10 +810,10 @@ namespace RelayCrm.Views
 			//
 			// ReportsView
 			//
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.Color.White;
 			this.Controls.Add(this.tabControl);
 			this.Controls.Add(this.toolStrip);
+			this.CssClass = "relay-card";
 			this.Name = "ReportsView";
 			this.Size = new System.Drawing.Size(1000, 640);
 			this.Load += new System.EventHandler(this.ReportsView_Load);
@@ -870,13 +888,13 @@ namespace RelayCrm.Views
 		private Wisej.Web.DataGridViewTextBoxColumn colReason;
 		private Wisej.Web.DataGridViewTextBoxColumn colReasonDeals;
 		private Wisej.Web.DataGridViewTextBoxColumn colReasonValue;
-		private Wisej.Web.DataGridViewTextBoxColumn colReasonShare;
+		private Wisej.Web.DataGridViewMeterColumn colReasonShare;
 		private Wisej.Web.TabPage tabActivity;
 		private Wisej.Web.SplitContainer splitActivity;
 		private Wisej.Web.Label labelActivityDescription;
 		private Wisej.Web.ChartView chartActivity;
 		private Wisej.Web.DataGridView gridActivity;
-		private Wisej.Web.DataGridViewTextBoxColumn colActivityUser;
+		private Wisej.Web.DataGridViewAvatarColumn colActivityUser;
 		private Wisej.Web.DataGridViewTextBoxColumn colActivityCalls;
 		private Wisej.Web.DataGridViewTextBoxColumn colActivityEmails;
 		private Wisej.Web.DataGridViewTextBoxColumn colActivityMeetings;

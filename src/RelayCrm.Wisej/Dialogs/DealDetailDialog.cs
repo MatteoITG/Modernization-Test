@@ -24,7 +24,6 @@ namespace RelayCrm.Dialogs
 			InitializeComponent();
 
 			IconImages.Apply(this.toolStrip);
-			this.listViewActivity.SmallImageList = IconImages.List(16, "telephone", "envelope", "people", "sticky");
 			this.listViewTasks.SmallImageList = IconImages.List(16, "square", "check2-square", "exclamation-circle");
 		}
 
@@ -69,13 +68,13 @@ namespace RelayCrm.Dialogs
 			this.linkCompany.Text = string.IsNullOrEmpty(deal.CompanyName) ? "No company" : deal.CompanyName;
 			this.linkCompany.Enabled = deal.CompanyId != null;
 			this.labelAmount.Text = deal.AmountText;
-			this.labelStage.Text = deal.StageName;
-			this.labelStage.ForeColor = ToneExtensions.DealStageTone(deal.IsWon, deal.IsLost).ToColor();
+			this.chipStage.Text = deal.StageName;
+			this.chipStage.Tone = ToneExtensions.DealStageTone(deal.IsWon, deal.IsLost).ToChip();
 			this.labelOwner.Text = "Owner: " + deal.OwnerName;
 		}
 
 		/// <summary>
-		/// The open stages in order and the closing step, as a text path: "✓ Qualification › ● Discovery › ○ Proposal › ...".
+		/// The open stages in order and the closing step (won or lost) as the steps of the stepper.
 		/// </summary>
 		private void ShowStages(DealDetail detail)
 		{
@@ -85,19 +84,18 @@ namespace RelayCrm.Dialogs
 			var lost = detail.Stages.FirstOrDefault(s => s.IsLost);
 			var current = open.FindIndex(s => s.Id == deal.StageId);
 
-			var steps = new List<string>();
+			this.stepperStages.Steps.Clear();
 			for (var i = 0; i < open.Count; i++)
 			{
-				var mark = deal.IsWon || (!deal.IsLost && i < current) ? "✓" : !deal.IsLost && i == current ? "●" : "○";
-				steps.Add(mark + " " + open[i].Name + " (" + open[i].Probability + "%)");
+				var state = deal.IsWon || (!deal.IsLost && i < current) ? StepState.Completed : !deal.IsLost && i == current ? StepState.Active : StepState.Pending;
+				this.stepperStages.Steps.Add(new Step { Text = open[i].Name, Description = open[i].Probability + "%", State = state });
 			}
 
 			if (deal.IsLost)
-				steps.Add("✗ " + (lost?.Name ?? "Lost") + (detail.ClosedDate == null ? "" : " on " + Fmt.Date(detail.ClosedDate.Value)));
+				this.stepperStages.Steps.Add(new Step { Text = lost?.Name ?? "Lost", Description = detail.ClosedDate == null ? "" : Fmt.Date(detail.ClosedDate.Value), State = StepState.Error });
 			else
-				steps.Add((deal.IsWon ? "✓ " : "○ ") + (won?.Name ?? "Won") + (deal.IsWon && detail.ClosedDate != null ? " on " + Fmt.Date(detail.ClosedDate.Value) : ""));
-
-			this.labelStages.Text = string.Join("   ›   ", steps);
+				this.stepperStages.Steps.Add(new Step { Text = won?.Name ?? "Won", Description = deal.IsWon && detail.ClosedDate != null ? Fmt.Date(detail.ClosedDate.Value) : "", State = deal.IsWon ? StepState.Completed : StepState.Pending });
+			this.stepperStages.ActiveIndex = deal.IsLost || deal.IsWon ? open.Count : Math.Max(0, current);
 		}
 
 		private void ShowFields(DealDetail detail)
@@ -142,23 +140,21 @@ namespace RelayCrm.Dialogs
 
 		private void ShowActivities(DealDetail detail)
 		{
-			this.listViewActivity.BeginUpdate();
-			this.listViewActivity.Items.Clear();
 			var now = DateTime.Now;
+			this.timelineActivity.Items.Clear();
 			foreach (var activity in detail.Activities)
 			{
-				var item = new ListViewItem(Fmt.DateAndTime(activity.Date), Icons.NameOf(ActivityLogService.Icon(activity.Type))) { Tag = activity.Id };
-				item.SubItems.Add(activity.Type.ToString());
-				item.SubItems.Add(activity.Subject ?? "");
-				item.SubItems.Add(activity.UserName ?? "");
-				item.SubItems.Add((activity.Body ?? "").Replace("\r", " ").Replace("\n", " "));
-				item.ToolTipText = activity.Body;
-				// planned activities stand out.
-				if (activity.Date > now)
-					item.ForeColor = Tone.Primary.ToColor();
-				this.listViewActivity.Items.Add(item);
+				this.timelineActivity.Items.Add(new TimelineItem
+				{
+					Time = activity.Date,
+					Title = string.IsNullOrEmpty(activity.Subject) ? activity.Type.ToString() : activity.Subject,
+					Description = activity.Type + " · " + (activity.UserName ?? "") + (string.IsNullOrEmpty(activity.Body) ? "" : " · " + activity.Body),
+					Icon = ActivityLogService.Icon(activity.Type),
+					// planned activities stand out.
+					Tone = activity.Date > now ? TimelineTone.Primary : TimelineTone.Neutral,
+					Tag = activity.Id,
+				});
 			}
-			this.listViewActivity.EndUpdate();
 			this.tabPageActivity.Text = detail.Activities.Count == 0 ? "Activity" : "Activity (" + detail.Activities.Count + ")";
 		}
 

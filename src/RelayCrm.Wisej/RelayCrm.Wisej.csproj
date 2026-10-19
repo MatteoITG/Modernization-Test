@@ -26,6 +26,13 @@
     </Content>
   </ItemGroup>
 
+  <!-- Wisej loads the embedded mixins named {Assembly}.Themes.*.mixin.theme after the theme. -->
+  <ItemGroup>
+    <None Remove="Themes\Relay.mixin.theme" />
+    <EmbeddedResource Include="Themes\Relay.mixin.theme" LogicalName="$(AssemblyName).Themes.Relay.mixin.theme" />
+    <Content Update="ClientProfiles.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Remove="Default.html" />
     <Content Include="Default.html">
@@ -37,6 +44,7 @@
     <!-- Pre-release 4.2 test build from the local feed "packages" (see nuget.config). -->
     <PackageReference Include="Wisej-4" Version="4.2.0-test.1" />
     <PackageReference Include="Wisej-4-BootstrapIcons" Version="4.1.*" />
+    <PackageReference Include="Wisej-4-NavigationBar" Version="4.1.*" />
   </ItemGroup>
 
   <ItemGroup>

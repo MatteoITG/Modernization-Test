@@ -28,250 +28,108 @@ namespace RelayCrm.Dialogs
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
-			this.groupBoxCondition = new Wisej.Web.GroupBox();
-			this.labelField = new Wisej.Web.Label();
-			this.comboBoxField = new Wisej.Web.ComboBox();
-			this.comboBoxOperator = new Wisej.Web.ComboBox();
-			this.comboBoxValue = new Wisej.Web.ComboBox();
-			this.dateTimePickerValue = new Wisej.Web.DateTimePicker();
-			this.buttonAdd = new Wisej.Web.Button();
-			this.labelRules = new Wisej.Web.Label();
-			this.listBoxRules = new Wisej.Web.ListBox();
-			this.labelEmpty = new Wisej.Web.Label();
-			this.buttonRemove = new Wisej.Web.Button();
+			this.queryBuilder = new Wisej.Web.QueryBuilder();
+			this.panelButtons = new Wisej.Web.Panel();
 			this.buttonClear = new Wisej.Web.Button();
-			this.labelMatch = new Wisej.Web.Label();
-			this.radioAll = new Wisej.Web.RadioButton();
-			this.radioAny = new Wisej.Web.RadioButton();
 			this.buttonOk = new Wisej.Web.Button();
 			this.buttonCancel = new Wisej.Web.Button();
-			this.errorProvider = new Wisej.Web.ErrorProvider(this.components);
-			this.groupBoxCondition.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
+			this.labelHint = new Wisej.Web.Label();
+			this.panelButtons.SuspendLayout();
 			this.SuspendLayout();
 			//
-			// groupBoxCondition
+			// queryBuilder
 			//
-			this.groupBoxCondition.Controls.Add(this.labelField);
-			this.groupBoxCondition.Controls.Add(this.comboBoxField);
-			this.groupBoxCondition.Controls.Add(this.comboBoxOperator);
-			this.groupBoxCondition.Controls.Add(this.comboBoxValue);
-			this.groupBoxCondition.Controls.Add(this.dateTimePickerValue);
-			this.groupBoxCondition.Controls.Add(this.buttonAdd);
-			this.groupBoxCondition.Location = new System.Drawing.Point(12, 8);
-			this.groupBoxCondition.Name = "groupBoxCondition";
-			this.groupBoxCondition.Size = new System.Drawing.Size(576, 62);
-			this.groupBoxCondition.TabIndex = 0;
-			this.groupBoxCondition.TabStop = false;
-			this.groupBoxCondition.Text = "New condition";
+			this.queryBuilder.Dock = Wisej.Web.DockStyle.Fill;
+			this.queryBuilder.Location = new System.Drawing.Point(16, 44);
+			this.queryBuilder.MaxDepth = 0;
+			this.queryBuilder.Name = "queryBuilder";
+			this.queryBuilder.ShowPreview = true;
+			this.queryBuilder.Size = new System.Drawing.Size(608, 288);
+			this.queryBuilder.TabIndex = 1;
 			//
-			// labelField
+			// panelButtons
 			//
-			this.labelField.AutoSize = true;
-			this.labelField.Location = new System.Drawing.Point(10, 27);
-			this.labelField.Name = "labelField";
-			this.labelField.Size = new System.Drawing.Size(16, 15);
-			this.labelField.TabIndex = 0;
-			this.labelField.Text = "&If";
-			//
-			// comboBoxField
-			//
-			this.comboBoxField.DropDownStyle = Wisej.Web.ComboBoxStyle.DropDownList;
-			this.comboBoxField.FormattingEnabled = true;
-			this.comboBoxField.Location = new System.Drawing.Point(30, 24);
-			this.comboBoxField.Name = "comboBoxField";
-			this.comboBoxField.Size = new System.Drawing.Size(140, 23);
-			this.comboBoxField.TabIndex = 1;
-			this.comboBoxField.SelectedIndexChanged += new System.EventHandler(this.comboBoxField_SelectedIndexChanged);
-			//
-			// comboBoxOperator
-			//
-			this.comboBoxOperator.DropDownStyle = Wisej.Web.ComboBoxStyle.DropDownList;
-			this.comboBoxOperator.FormattingEnabled = true;
-			this.comboBoxOperator.Location = new System.Drawing.Point(176, 24);
-			this.comboBoxOperator.Name = "comboBoxOperator";
-			this.comboBoxOperator.Size = new System.Drawing.Size(120, 23);
-			this.comboBoxOperator.TabIndex = 2;
-			this.comboBoxOperator.SelectedIndexChanged += new System.EventHandler(this.comboBoxOperator_SelectedIndexChanged);
-			//
-			// comboBoxValue
-			//
-			this.comboBoxValue.FormattingEnabled = true;
-			this.comboBoxValue.Location = new System.Drawing.Point(302, 24);
-			this.comboBoxValue.Name = "comboBoxValue";
-			this.comboBoxValue.Size = new System.Drawing.Size(170, 23);
-			this.comboBoxValue.TabIndex = 3;
-			this.comboBoxValue.TextChanged += new System.EventHandler(this.comboBoxValue_TextChanged);
-			//
-			// dateTimePickerValue
-			//
-			this.dateTimePickerValue.Format = Wisej.Web.DateTimePickerFormat.Short;
-			this.dateTimePickerValue.Location = new System.Drawing.Point(302, 24);
-			this.dateTimePickerValue.Name = "dateTimePickerValue";
-			this.dateTimePickerValue.Size = new System.Drawing.Size(170, 23);
-			this.dateTimePickerValue.TabIndex = 4;
-			this.dateTimePickerValue.Visible = false;
-			//
-			// buttonAdd
-			//
-			this.buttonAdd.Location = new System.Drawing.Point(486, 22);
-			this.buttonAdd.Name = "buttonAdd";
-			this.buttonAdd.Size = new System.Drawing.Size(80, 27);
-			this.buttonAdd.TabIndex = 5;
-			this.buttonAdd.Text = "&Add";
-			this.buttonAdd.Click += new System.EventHandler(this.buttonAdd_Click);
-			//
-			// labelRules
-			//
-			this.labelRules.AutoSize = true;
-			this.labelRules.Location = new System.Drawing.Point(12, 80);
-			this.labelRules.Name = "labelRules";
-			this.labelRules.Size = new System.Drawing.Size(66, 15);
-			this.labelRules.TabIndex = 1;
-			this.labelRules.Text = "C&onditions:";
-			//
-			// listBoxRules
-			//
-			this.listBoxRules.FormattingEnabled = true;
-			this.listBoxRules.ItemHeight = 15;
-			this.listBoxRules.Location = new System.Drawing.Point(12, 98);
-			this.listBoxRules.Name = "listBoxRules";
-			this.listBoxRules.Size = new System.Drawing.Size(480, 150);
-			this.listBoxRules.TabIndex = 2;
-			this.listBoxRules.SelectedIndexChanged += new System.EventHandler(this.listBoxRules_SelectedIndexChanged);
-			//
-			// labelEmpty
-			//
-			this.labelEmpty.BackColor = System.Drawing.SystemColors.Window;
-			this.labelEmpty.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.labelEmpty.Location = new System.Drawing.Point(20, 110);
-			this.labelEmpty.Name = "labelEmpty";
-			this.labelEmpty.Size = new System.Drawing.Size(440, 18);
-			this.labelEmpty.TabIndex = 3;
-			this.labelEmpty.Text = "No conditions: every row is shown. Add one above.";
-			//
-			// buttonRemove
-			//
-			this.buttonRemove.Location = new System.Drawing.Point(500, 98);
-			this.buttonRemove.Name = "buttonRemove";
-			this.buttonRemove.Size = new System.Drawing.Size(88, 27);
-			this.buttonRemove.TabIndex = 4;
-			this.buttonRemove.Text = "&Remove";
-			this.buttonRemove.Click += new System.EventHandler(this.buttonRemove_Click);
+			this.panelButtons.Controls.Add(this.buttonClear);
+			this.panelButtons.Controls.Add(this.buttonOk);
+			this.panelButtons.Controls.Add(this.buttonCancel);
+			this.panelButtons.Dock = Wisej.Web.DockStyle.Bottom;
+			this.panelButtons.Location = new System.Drawing.Point(16, 332);
+			this.panelButtons.Name = "panelButtons";
+			this.panelButtons.Padding = new Wisej.Web.Padding(0, 12, 0, 0);
+			this.panelButtons.Size = new System.Drawing.Size(608, 48);
+			this.panelButtons.TabIndex = 2;
 			//
 			// buttonClear
 			//
-			this.buttonClear.Location = new System.Drawing.Point(500, 131);
+			this.buttonClear.CssClass = "relay-secondary";
+			this.buttonClear.Dock = Wisej.Web.DockStyle.Left;
+			this.buttonClear.Location = new System.Drawing.Point(0, 12);
 			this.buttonClear.Name = "buttonClear";
-			this.buttonClear.Size = new System.Drawing.Size(88, 27);
-			this.buttonClear.TabIndex = 5;
-			this.buttonClear.Text = "C&lear all";
+			this.buttonClear.Size = new System.Drawing.Size(100, 36);
+			this.buttonClear.TabIndex = 0;
+			this.buttonClear.Text = "Clear all";
 			this.buttonClear.Click += new System.EventHandler(this.buttonClear_Click);
-			//
-			// labelMatch
-			//
-			this.labelMatch.AutoSize = true;
-			this.labelMatch.Location = new System.Drawing.Point(12, 262);
-			this.labelMatch.Name = "labelMatch";
-			this.labelMatch.Size = new System.Drawing.Size(66, 15);
-			this.labelMatch.TabIndex = 6;
-			this.labelMatch.Text = "Show rows:";
-			//
-			// radioAll
-			//
-			this.radioAll.AutoSize = true;
-			this.radioAll.Checked = true;
-			this.radioAll.Location = new System.Drawing.Point(90, 260);
-			this.radioAll.Name = "radioAll";
-			this.radioAll.Size = new System.Drawing.Size(162, 19);
-			this.radioAll.TabIndex = 7;
-			this.radioAll.TabStop = true;
-			this.radioAll.Text = "matching a&ll conditions";
-			//
-			// radioAny
-			//
-			this.radioAny.AutoSize = true;
-			this.radioAny.Location = new System.Drawing.Point(260, 260);
-			this.radioAny.Name = "radioAny";
-			this.radioAny.Size = new System.Drawing.Size(170, 19);
-			this.radioAny.TabIndex = 8;
-			this.radioAny.Text = "matching a&ny condition";
 			//
 			// buttonOk
 			//
+			this.buttonOk.CssClass = "relay-primary";
 			this.buttonOk.DialogResult = Wisej.Web.DialogResult.OK;
-			this.buttonOk.Location = new System.Drawing.Point(396, 296);
+			this.buttonOk.Dock = Wisej.Web.DockStyle.Right;
+			this.buttonOk.Location = new System.Drawing.Point(408, 12);
 			this.buttonOk.Name = "buttonOk";
-			this.buttonOk.Size = new System.Drawing.Size(92, 27);
-			this.buttonOk.TabIndex = 9;
+			this.buttonOk.Size = new System.Drawing.Size(100, 36);
+			this.buttonOk.TabIndex = 1;
 			this.buttonOk.Text = "Apply";
 			//
 			// buttonCancel
 			//
+			this.buttonCancel.CssClass = "relay-secondary";
 			this.buttonCancel.DialogResult = Wisej.Web.DialogResult.Cancel;
-			this.buttonCancel.Location = new System.Drawing.Point(496, 296);
+			this.buttonCancel.Dock = Wisej.Web.DockStyle.Right;
+			this.buttonCancel.Location = new System.Drawing.Point(508, 12);
 			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.Size = new System.Drawing.Size(92, 27);
-			this.buttonCancel.TabIndex = 10;
+			this.buttonCancel.Size = new System.Drawing.Size(100, 36);
+			this.buttonCancel.TabIndex = 2;
 			this.buttonCancel.Text = "Cancel";
 			//
-			// errorProvider
+			// labelHint
 			//
-			this.errorProvider.BlinkStyle = Wisej.Web.ErrorBlinkStyle.NeverBlink;
-			this.errorProvider.ContainerControl = this;
+			this.labelHint.CssClass = "relay-muted";
+			this.labelHint.Dock = Wisej.Web.DockStyle.Top;
+			this.labelHint.Location = new System.Drawing.Point(16, 16);
+			this.labelHint.Name = "labelHint";
+			this.labelHint.Size = new System.Drawing.Size(608, 28);
+			this.labelHint.TabIndex = 0;
+			this.labelHint.Text = "Show the rows that match all or any of these conditions.";
 			//
 			// FilterDialog
 			//
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
+			this.AcceptButton = this.buttonOk;
 			this.CancelButton = this.buttonCancel;
-			this.ClientSize = new System.Drawing.Size(600, 335);
-			this.Controls.Add(this.buttonCancel);
-			this.Controls.Add(this.buttonOk);
-			this.Controls.Add(this.radioAny);
-			this.Controls.Add(this.radioAll);
-			this.Controls.Add(this.labelMatch);
-			this.Controls.Add(this.buttonClear);
-			this.Controls.Add(this.buttonRemove);
-			this.Controls.Add(this.labelEmpty);
-			this.Controls.Add(this.listBoxRules);
-			this.Controls.Add(this.labelRules);
-			this.Controls.Add(this.groupBoxCondition);
-			this.FormBorderStyle = Wisej.Web.FormBorderStyle.Fixed;
+			this.ClientSize = new System.Drawing.Size(640, 396);
+			this.Controls.Add(this.queryBuilder);
+			this.Controls.Add(this.labelHint);
+			this.Controls.Add(this.panelButtons);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
+			this.MinimumSize = new System.Drawing.Size(480, 320);
 			this.Name = "FilterDialog";
+			this.Padding = new Wisej.Web.Padding(16);
 			this.ShowInTaskbar = false;
 			this.StartPosition = Wisej.Web.FormStartPosition.CenterParent;
 			this.Text = "Advanced filter";
-			this.groupBoxCondition.ResumeLayout(false);
-			this.groupBoxCondition.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
+			this.panelButtons.ResumeLayout(false);
 			this.ResumeLayout(false);
-			this.PerformLayout();
 
 		}
 
 		#endregion
 
-		private Wisej.Web.GroupBox groupBoxCondition;
-		private Wisej.Web.Label labelField;
-		private Wisej.Web.ComboBox comboBoxField;
-		private Wisej.Web.ComboBox comboBoxOperator;
-		private Wisej.Web.ComboBox comboBoxValue;
-		private Wisej.Web.DateTimePicker dateTimePickerValue;
-		private Wisej.Web.Button buttonAdd;
-		private Wisej.Web.Label labelRules;
-		private Wisej.Web.ListBox listBoxRules;
-		private Wisej.Web.Label labelEmpty;
-		private Wisej.Web.Button buttonRemove;
+		private Wisej.Web.QueryBuilder queryBuilder;
+		private Wisej.Web.Panel panelButtons;
 		private Wisej.Web.Button buttonClear;
-		private Wisej.Web.Label labelMatch;
-		private Wisej.Web.RadioButton radioAll;
-		private Wisej.Web.RadioButton radioAny;
 		private Wisej.Web.Button buttonOk;
 		private Wisej.Web.Button buttonCancel;
-		private Wisej.Web.ErrorProvider errorProvider;
+		private Wisej.Web.Label labelHint;
 	}
 }

@@ -60,6 +60,7 @@ namespace RelayCrm.Dialogs
 			this.buttonOk.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Bottom | Wisej.Web.AnchorStyles.Right)));
 			this.buttonOk.DialogResult = Wisej.Web.DialogResult.OK;
 			this.buttonOk.Location = new System.Drawing.Point(184, 100);
+			this.buttonOk.CssClass = "relay-primary";
 			this.buttonOk.Name = "buttonOk";
 			this.buttonOk.Size = new System.Drawing.Size(104, 27);
 			this.buttonOk.TabIndex = 2;
@@ -70,6 +71,7 @@ namespace RelayCrm.Dialogs
 			this.buttonCancel.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Bottom | Wisej.Web.AnchorStyles.Right)));
 			this.buttonCancel.DialogResult = Wisej.Web.DialogResult.Cancel;
 			this.buttonCancel.Location = new System.Drawing.Point(296, 100);
+			this.buttonCancel.CssClass = "relay-secondary";
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.Size = new System.Drawing.Size(92, 27);
 			this.buttonCancel.TabIndex = 3;

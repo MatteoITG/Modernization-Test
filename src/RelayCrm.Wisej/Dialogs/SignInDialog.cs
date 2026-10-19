@@ -40,14 +40,11 @@ namespace RelayCrm.Dialogs
 
 		private void LoadUsers(List<UserItem> users)
 		{
-			var size = 32;
-			this.imageListAvatars.ImageSize = new System.Drawing.Size(size, size);
-
 			// Admins first, then Managers, then Sales.
 			this.listViewUsers.BeginUpdate();
 			foreach (var user in users.OrderBy(u => u.Role).ThenBy(u => u.Name))
 			{
-				this.imageListAvatars.Images.Add(user.Id.ToString(), Avatars.Create(user.Name, user.AvatarColor, size));
+				this.imageListAvatars.Images.Add(user.Id.ToString(), Avatars.Source(user.Name, user.AvatarColor));
 				var item = new ListViewItem(user.Name, user.Id.ToString()) { Tag = user.Id };
 				item.SubItems.Add(user.Role.ToString());
 				item.SubItems.Add(user.Email);

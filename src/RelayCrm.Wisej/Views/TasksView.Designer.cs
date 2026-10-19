@@ -29,7 +29,7 @@ namespace RelayCrm.Views
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			this.labelEmpty = new Wisej.Web.Label();
+			this.emptyState = new Wisej.Web.EmptyState();
 			this.listView = new Wisej.Web.ListView();
 			this.columnTitle = new Wisej.Web.ColumnHeader();
 			this.columnPriority = new Wisej.Web.ColumnHeader();
@@ -55,18 +55,17 @@ namespace RelayCrm.Views
 			this.toolStrip.SuspendLayout();
 			this.SuspendLayout();
 			//
-			// labelEmpty
+			// emptyState
 			//
-			this.labelEmpty.BackColor = System.Drawing.SystemColors.Window;
-			this.labelEmpty.Dock = Wisej.Web.DockStyle.Fill;
-			this.labelEmpty.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.labelEmpty.Location = new System.Drawing.Point(0, 27);
-			this.labelEmpty.Name = "labelEmpty";
-			this.labelEmpty.Size = new System.Drawing.Size(900, 533);
-			this.labelEmpty.TabIndex = 2;
-			this.labelEmpty.Text = "No tasks here. Create one with New task.";
-			this.labelEmpty.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.labelEmpty.Visible = false;
+			this.emptyState.Description = "New tasks appear here, grouped by due date.";
+			this.emptyState.Dock = Wisej.Web.DockStyle.Fill;
+			this.emptyState.Icon = "resource.wx/Wisej.Ext.BootstrapIcons/check2-square.svg";
+			this.emptyState.Location = new System.Drawing.Point(0, 44);
+			this.emptyState.Name = "emptyState";
+			this.emptyState.Size = new System.Drawing.Size(1000, 556);
+			this.emptyState.TabIndex = 2;
+			this.emptyState.Title = "No tasks.";
+			this.emptyState.Visible = false;
 			//
 			// listView
 			//
@@ -89,6 +88,7 @@ namespace RelayCrm.Views
 			this.listView.ItemDoubleClick += new Wisej.Web.ItemClickEventHandler(this.listView_ItemActivate);
 			this.listView.ItemChecked += new Wisej.Web.ItemCheckedEventHandler(this.listView_ItemChecked);
 			this.listView.SelectedIndexChanged += new System.EventHandler(this.listView_SelectedIndexChanged);
+			this.listView.BorderStyle = Wisej.Web.BorderStyle.None;
 			//
 			// columnTitle
 			//
@@ -133,6 +133,7 @@ namespace RelayCrm.Views
 			this.toolStrip.Size = new System.Drawing.Size(800, 27);
 			this.toolStrip.TabIndex = 0;
 			this.toolStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
+			this.toolStrip.CssClass = "relay-toolbar";
 			//
 			// buttonNew
 			//
@@ -238,11 +239,11 @@ namespace RelayCrm.Views
 			//
 			// TasksView
 			//
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
-			this.Controls.Add(this.labelEmpty);
+			this.BackColor = System.Drawing.Color.White;
+			this.Controls.Add(this.emptyState);
 			this.Controls.Add(this.listView);
 			this.Controls.Add(this.toolStrip);
+			this.CssClass = "relay-card";
 			this.Name = "TasksView";
 			this.Size = new System.Drawing.Size(900, 560);
 			this.Load += new System.EventHandler(this.TasksView_Load);
@@ -255,7 +256,7 @@ namespace RelayCrm.Views
 
 		#endregion
 
-		private Wisej.Web.Label labelEmpty;
+		private Wisej.Web.EmptyState emptyState;
 		private Wisej.Web.ListView listView;
 		private Wisej.Web.ColumnHeader columnTitle;
 		private Wisej.Web.ColumnHeader columnPriority;

@@ -38,13 +38,13 @@ namespace RelayCrm.Views
 			this.buttonDelete = new Wisej.Web.ToolBarButton();
 			this.panelHeader = new Wisej.Web.Panel();
 			this.linkBack = new Wisej.Web.LinkLabel();
-			this.pictureAvatar = new Wisej.Web.PictureBox();
+			this.avatar = new Wisej.Web.Avatar();
 			this.labelName = new Wisej.Web.Label();
 			this.flowSubtitle = new Wisej.Web.FlowLayoutPanel();
 			this.labelTitleAt = new Wisej.Web.Label();
 			this.linkCompany = new Wisej.Web.LinkLabel();
 			this.labelDot1 = new Wisej.Web.Label();
-			this.labelStage = new Wisej.Web.Label();
+			this.chipStage = new Wisej.Web.ChipLabel();
 			this.labelDot2 = new Wisej.Web.Label();
 			this.labelOwner = new Wisej.Web.Label();
 			this.tabPageOverview = new Wisej.Web.TabPage();
@@ -70,39 +70,28 @@ namespace RelayCrm.Views
 			this.textBoxTags = new Wisej.Web.TextBox();
 			this.buttonEditOverview = new Wisej.Web.Button();
 			this.tabPageActivity = new Wisej.Web.TabPage();
-			this.labelNoActivity = new Wisej.Web.Label();
-			this.listViewActivity = new Wisej.Web.ListView();
-			this.columnActivityDate = new Wisej.Web.ColumnHeader();
-			this.columnActivityType = new Wisej.Web.ColumnHeader();
-			this.columnActivitySubject = new Wisej.Web.ColumnHeader();
-			this.columnActivityDuration = new Wisej.Web.ColumnHeader();
-			this.columnActivityUser = new Wisej.Web.ColumnHeader();
-			this.columnActivityNotes = new Wisej.Web.ColumnHeader();
+			this.emptyActivity = new Wisej.Web.EmptyState();
+			this.timelineActivity = new Wisej.Web.Timeline();
 			this.activityStrip = new Wisej.Web.ToolBar();
 			this.buttonLogActivityTab = new Wisej.Web.ToolBarButton();
 			this.tabPageDeals = new Wisej.Web.TabPage();
-			this.labelNoDeals = new Wisej.Web.Label();
-			this.listViewDeals = new Wisej.Web.ListView();
-			this.columnDealTitle = new Wisej.Web.ColumnHeader();
-			this.columnDealStage = new Wisej.Web.ColumnHeader();
-			this.columnDealDescription = new Wisej.Web.ColumnHeader();
-			this.columnDealMeta = new Wisej.Web.ColumnHeader();
+			this.emptyDeals = new Wisej.Web.EmptyState();
+			this.listDeals = new Wisej.Web.ActionCardList();
 			this.dealsStrip = new Wisej.Web.ToolBar();
 			this.buttonNewDealTab = new Wisej.Web.ToolBarButton();
 			this.tabPageTasks = new Wisej.Web.TabPage();
-			this.labelNoTasks = new Wisej.Web.Label();
+			this.emptyTasks = new Wisej.Web.EmptyState();
 			this.gridTasks = new Wisej.Web.DataGridView();
 			this.colTaskTitle = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colTaskDue = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colTaskPriority = new Wisej.Web.DataGridViewTextBoxColumn();
 			this.colTaskAssignee = new Wisej.Web.DataGridViewTextBoxColumn();
-			this.colTaskStatus = new Wisej.Web.DataGridViewTextBoxColumn();
+			this.colTaskStatus = new Wisej.Web.DataGridViewChipColumn();
 			this.tasksStrip = new Wisej.Web.ToolBar();
 			this.buttonAddTaskTab = new Wisej.Web.ToolBarButton();
 			this.tabControl.SuspendLayout();
 			this.toolStrip.SuspendLayout();
 			this.panelHeader.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureAvatar)).BeginInit();
 			this.flowSubtitle.SuspendLayout();
 			this.tabPageOverview.SuspendLayout();
 			this.tabPageActivity.SuspendLayout();
@@ -142,6 +131,7 @@ namespace RelayCrm.Views
 			this.toolStrip.Size = new System.Drawing.Size(800, 27);
 			this.toolStrip.TabIndex = 1;
 			this.toolStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
+			this.toolStrip.CssClass = "relay-toolbar";
 			//
 			// buttonLogActivity
 			//
@@ -186,7 +176,7 @@ namespace RelayCrm.Views
 			// panelHeader
 			//
 			this.panelHeader.Controls.Add(this.linkBack);
-			this.panelHeader.Controls.Add(this.pictureAvatar);
+			this.panelHeader.Controls.Add(this.avatar);
 			this.panelHeader.Controls.Add(this.labelName);
 			this.panelHeader.Controls.Add(this.flowSubtitle);
 			this.panelHeader.Dock = Wisej.Web.DockStyle.Top;
@@ -206,32 +196,31 @@ namespace RelayCrm.Views
 			this.linkBack.Text = "‹ Back to contacts";
 			this.linkBack.LinkClicked += new Wisej.Web.LinkLabelLinkClickedEventHandler(this.linkBack_LinkClicked);
 			//
-			// pictureAvatar
+			// avatar
 			//
-			this.pictureAvatar.Location = new System.Drawing.Point(12, 28);
-			this.pictureAvatar.Name = "pictureAvatar";
-			this.pictureAvatar.Size = new System.Drawing.Size(52, 52);
-			this.pictureAvatar.SizeMode = Wisej.Web.PictureBoxSizeMode.Zoom;
-			this.pictureAvatar.TabIndex = 1;
-			this.pictureAvatar.TabStop = false;
+			this.avatar.AvatarSize = 52;
+			this.avatar.Location = new System.Drawing.Point(12, 28);
+			this.avatar.Name = "avatar";
+			this.avatar.Size = new System.Drawing.Size(52, 52);
+			this.avatar.TabIndex = 1;
 			//
 			// labelName
 			//
 			this.labelName.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Top | Wisej.Web.AnchorStyles.Left) | Wisej.Web.AnchorStyles.Right));
 			this.labelName.AutoEllipsis = true;
-			this.labelName.Font = new System.Drawing.Font("Segoe UI", 15F, System.Drawing.FontStyle.Bold);
 			this.labelName.Location = new System.Drawing.Point(72, 26);
 			this.labelName.Name = "labelName";
 			this.labelName.Size = new System.Drawing.Size(900, 30);
 			this.labelName.TabIndex = 2;
 			this.labelName.Text = "Name";
+			this.labelName.AppearanceKey = "relay-page-title";
 			//
 			// flowSubtitle
 			//
 			this.flowSubtitle.Controls.Add(this.labelTitleAt);
 			this.flowSubtitle.Controls.Add(this.linkCompany);
 			this.flowSubtitle.Controls.Add(this.labelDot1);
-			this.flowSubtitle.Controls.Add(this.labelStage);
+			this.flowSubtitle.Controls.Add(this.chipStage);
 			this.flowSubtitle.Controls.Add(this.labelDot2);
 			this.flowSubtitle.Controls.Add(this.labelOwner);
 			this.flowSubtitle.Anchor = ((Wisej.Web.AnchorStyles)((Wisej.Web.AnchorStyles.Top | Wisej.Web.AnchorStyles.Left) | Wisej.Web.AnchorStyles.Right));
@@ -268,14 +257,13 @@ namespace RelayCrm.Views
 			this.labelDot1.Text = "·";
 			this.labelDot1.ForeColor = System.Drawing.SystemColors.GrayText;
 			//
-			// labelStage
+			// chipStage
 			//
-			this.labelStage.AutoSize = true;
-			this.labelStage.Margin = new Wisej.Web.Padding(0, 3, 4, 0);
-			this.labelStage.Name = "labelStage";
-			this.labelStage.Size = new System.Drawing.Size(28, 15);
-			this.labelStage.Text = "Lead";
-			this.labelStage.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+			this.chipStage.ChipSize = Wisej.Web.ChipSize.Small;
+			this.chipStage.Margin = new Wisej.Web.Padding(0, 0, 6, 0);
+			this.chipStage.Name = "chipStage";
+			this.chipStage.Size = new System.Drawing.Size(84, 22);
+			this.chipStage.Text = "Lead";
 			//
 			// labelDot2
 			//
@@ -516,8 +504,8 @@ namespace RelayCrm.Views
 			//
 			// tabPageActivity
 			//
-			this.tabPageActivity.Controls.Add(this.labelNoActivity);
-			this.tabPageActivity.Controls.Add(this.listViewActivity);
+			this.tabPageActivity.Controls.Add(this.emptyActivity);
+			this.tabPageActivity.Controls.Add(this.timelineActivity);
 			this.tabPageActivity.Controls.Add(this.activityStrip);
 			this.tabPageActivity.Location = new System.Drawing.Point(4, 24);
 			this.tabPageActivity.Name = "tabPageActivity";
@@ -526,67 +514,26 @@ namespace RelayCrm.Views
 			this.tabPageActivity.TabIndex = 0;
 			this.tabPageActivity.Text = "Activity";
 			//
-			// labelNoActivity
+			// emptyActivity
 			//
-			this.labelNoActivity.BackColor = System.Drawing.SystemColors.Window;
-			this.labelNoActivity.Dock = Wisej.Web.DockStyle.Fill;
-			this.labelNoActivity.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.labelNoActivity.Location = new System.Drawing.Point(3, 30);
-			this.labelNoActivity.Name = "labelNoActivity";
-			this.labelNoActivity.Size = new System.Drawing.Size(900, 400);
-			this.labelNoActivity.TabIndex = 2;
-			this.labelNoActivity.Text = "No activity yet. Log a call, an email, a meeting or a note.";
-			this.labelNoActivity.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.labelNoActivity.Visible = false;
+			this.emptyActivity.Compact = true;
+			this.emptyActivity.Dock = Wisej.Web.DockStyle.Fill;
+			this.emptyActivity.Icon = "resource.wx/Wisej.Ext.BootstrapIcons/calendar-event.svg";
+			this.emptyActivity.Location = new System.Drawing.Point(3, 30);
+			this.emptyActivity.Name = "emptyActivity";
+			this.emptyActivity.Size = new System.Drawing.Size(900, 400);
+			this.emptyActivity.TabIndex = 2;
+			this.emptyActivity.Title = "No activity yet. Log a call, an email, a meeting or a note.";
+			this.emptyActivity.Visible = false;
 			//
-			// listViewActivity
+			// timelineActivity
 			//
-			this.listViewActivity.Columns.AddRange(new Wisej.Web.ColumnHeader[] {
-			this.columnActivityDate,
-			this.columnActivityType,
-			this.columnActivitySubject,
-			this.columnActivityDuration,
-			this.columnActivityUser,
-			this.columnActivityNotes});
-			this.listViewActivity.Dock = Wisej.Web.DockStyle.Fill;
-			this.listViewActivity.Location = new System.Drawing.Point(3, 30);
-			this.listViewActivity.MultiSelect = false;
-			this.listViewActivity.Name = "listViewActivity";
-			this.listViewActivity.ShowItemToolTips = true;
-			this.listViewActivity.Size = new System.Drawing.Size(900, 400);
-			this.listViewActivity.TabIndex = 1;
-			this.listViewActivity.View = Wisej.Web.View.Details;
-			//
-			// columnActivityDate
-			//
-			this.columnActivityDate.Text = "Date";
-			this.columnActivityDate.Width = 150;
-			//
-			// columnActivityType
-			//
-			this.columnActivityType.Text = "Type";
-			this.columnActivityType.Width = 70;
-			//
-			// columnActivitySubject
-			//
-			this.columnActivitySubject.Text = "Subject";
-			this.columnActivitySubject.Width = 220;
-			//
-			// columnActivityDuration
-			//
-			this.columnActivityDuration.Text = "Duration";
-			this.columnActivityDuration.TextAlign = Wisej.Web.HorizontalAlignment.Right;
-			this.columnActivityDuration.Width = 70;
-			//
-			// columnActivityUser
-			//
-			this.columnActivityUser.Text = "By";
-			this.columnActivityUser.Width = 120;
-			//
-			// columnActivityNotes
-			//
-			this.columnActivityNotes.Text = "Notes";
-			this.columnActivityNotes.Width = 360;
+			this.timelineActivity.Dock = Wisej.Web.DockStyle.Fill;
+			this.timelineActivity.Location = new System.Drawing.Point(3, 30);
+			this.timelineActivity.Name = "timelineActivity";
+			this.timelineActivity.Size = new System.Drawing.Size(900, 400);
+			this.timelineActivity.TabIndex = 1;
+			this.timelineActivity.TimeFormat = "MMM d, yyyy  HH:mm";
 			//
 			// activityStrip
 			//
@@ -599,6 +546,7 @@ namespace RelayCrm.Views
 			this.activityStrip.TabIndex = 0;
 			this.activityStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
 			this.activityStrip.BackColor = System.Drawing.SystemColors.Window;
+			this.activityStrip.CssClass = "relay-toolbar";
 			//
 			// buttonLogActivityTab
 			//
@@ -609,8 +557,8 @@ namespace RelayCrm.Views
 			//
 			// tabPageDeals
 			//
-			this.tabPageDeals.Controls.Add(this.labelNoDeals);
-			this.tabPageDeals.Controls.Add(this.listViewDeals);
+			this.tabPageDeals.Controls.Add(this.emptyDeals);
+			this.tabPageDeals.Controls.Add(this.listDeals);
 			this.tabPageDeals.Controls.Add(this.dealsStrip);
 			this.tabPageDeals.Location = new System.Drawing.Point(4, 24);
 			this.tabPageDeals.Name = "tabPageDeals";
@@ -619,55 +567,28 @@ namespace RelayCrm.Views
 			this.tabPageDeals.TabIndex = 0;
 			this.tabPageDeals.Text = "Deals";
 			//
-			// labelNoDeals
+			// emptyDeals
 			//
-			this.labelNoDeals.BackColor = System.Drawing.SystemColors.Window;
-			this.labelNoDeals.Dock = Wisej.Web.DockStyle.Fill;
-			this.labelNoDeals.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.labelNoDeals.Location = new System.Drawing.Point(3, 30);
-			this.labelNoDeals.Name = "labelNoDeals";
-			this.labelNoDeals.Size = new System.Drawing.Size(900, 400);
-			this.labelNoDeals.TabIndex = 2;
-			this.labelNoDeals.Text = "No deals yet.";
-			this.labelNoDeals.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.labelNoDeals.Visible = false;
+			this.emptyDeals.Compact = true;
+			this.emptyDeals.Dock = Wisej.Web.DockStyle.Fill;
+			this.emptyDeals.Icon = "resource.wx/Wisej.Ext.BootstrapIcons/briefcase.svg";
+			this.emptyDeals.Location = new System.Drawing.Point(3, 30);
+			this.emptyDeals.Name = "emptyDeals";
+			this.emptyDeals.Size = new System.Drawing.Size(900, 400);
+			this.emptyDeals.TabIndex = 2;
+			this.emptyDeals.Title = "No deals yet.";
+			this.emptyDeals.Visible = false;
 			//
-			// listViewDeals
+			// listDeals
 			//
-			this.listViewDeals.Columns.AddRange(new Wisej.Web.ColumnHeader[] {
-			this.columnDealTitle,
-			this.columnDealStage,
-			this.columnDealDescription,
-			this.columnDealMeta});
-			this.listViewDeals.Dock = Wisej.Web.DockStyle.Fill;
-			this.listViewDeals.Location = new System.Drawing.Point(3, 30);
-			this.listViewDeals.MultiSelect = false;
-			this.listViewDeals.Name = "listViewDeals";
-			this.listViewDeals.ShowItemToolTips = true;
-			this.listViewDeals.Size = new System.Drawing.Size(900, 400);
-			this.listViewDeals.TabIndex = 1;
-			this.listViewDeals.View = Wisej.Web.View.Details;
-			this.listViewDeals.ItemDoubleClick += new Wisej.Web.ItemClickEventHandler(this.listViewDeals_ItemActivate);
-			//
-			// columnDealTitle
-			//
-			this.columnDealTitle.Text = "Deal";
-			this.columnDealTitle.Width = 260;
-			//
-			// columnDealStage
-			//
-			this.columnDealStage.Text = "Stage";
-			this.columnDealStage.Width = 110;
-			//
-			// columnDealDescription
-			//
-			this.columnDealDescription.Text = "Amount and company";
-			this.columnDealDescription.Width = 260;
-			//
-			// columnDealMeta
-			//
-			this.columnDealMeta.Text = "Close";
-			this.columnDealMeta.Width = 200;
+			this.listDeals.Dock = Wisej.Web.DockStyle.Fill;
+			this.listDeals.ItemHeight = 80;
+			this.listDeals.ItemSpacing = 8;
+			this.listDeals.Location = new System.Drawing.Point(3, 30);
+			this.listDeals.Name = "listDeals";
+			this.listDeals.Size = new System.Drawing.Size(900, 400);
+			this.listDeals.TabIndex = 1;
+			this.listDeals.ItemClick += new System.EventHandler<Wisej.Web.ActionCardListItemEventArgs>(this.listDeals_ItemClick);
 			//
 			// dealsStrip
 			//
@@ -680,6 +601,7 @@ namespace RelayCrm.Views
 			this.dealsStrip.TabIndex = 0;
 			this.dealsStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
 			this.dealsStrip.BackColor = System.Drawing.SystemColors.Window;
+			this.dealsStrip.CssClass = "relay-toolbar";
 			//
 			// buttonNewDealTab
 			//
@@ -690,7 +612,7 @@ namespace RelayCrm.Views
 			//
 			// tabPageTasks
 			//
-			this.tabPageTasks.Controls.Add(this.labelNoTasks);
+			this.tabPageTasks.Controls.Add(this.emptyTasks);
 			this.tabPageTasks.Controls.Add(this.gridTasks);
 			this.tabPageTasks.Controls.Add(this.tasksStrip);
 			this.tabPageTasks.Location = new System.Drawing.Point(4, 24);
@@ -700,18 +622,17 @@ namespace RelayCrm.Views
 			this.tabPageTasks.TabIndex = 0;
 			this.tabPageTasks.Text = "Tasks";
 			//
-			// labelNoTasks
+			// emptyTasks
 			//
-			this.labelNoTasks.BackColor = System.Drawing.SystemColors.Window;
-			this.labelNoTasks.Dock = Wisej.Web.DockStyle.Fill;
-			this.labelNoTasks.ForeColor = System.Drawing.SystemColors.GrayText;
-			this.labelNoTasks.Location = new System.Drawing.Point(3, 30);
-			this.labelNoTasks.Name = "labelNoTasks";
-			this.labelNoTasks.Size = new System.Drawing.Size(900, 400);
-			this.labelNoTasks.TabIndex = 2;
-			this.labelNoTasks.Text = "No tasks.";
-			this.labelNoTasks.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.labelNoTasks.Visible = false;
+			this.emptyTasks.Compact = true;
+			this.emptyTasks.Dock = Wisej.Web.DockStyle.Fill;
+			this.emptyTasks.Icon = "resource.wx/Wisej.Ext.BootstrapIcons/check2-square.svg";
+			this.emptyTasks.Location = new System.Drawing.Point(3, 30);
+			this.emptyTasks.Name = "emptyTasks";
+			this.emptyTasks.Size = new System.Drawing.Size(900, 400);
+			this.emptyTasks.TabIndex = 2;
+			this.emptyTasks.Title = "No tasks.";
+			this.emptyTasks.Visible = false;
 			//
 			// gridTasks
 			//
@@ -735,7 +656,9 @@ namespace RelayCrm.Views
 			this.gridTasks.Size = new System.Drawing.Size(400, 200);
 			this.gridTasks.TabIndex = 1;
 			this.gridTasks.CellDoubleClick += new Wisej.Web.DataGridViewCellEventHandler(this.gridTasks_CellDoubleClick);
-			this.gridTasks.CellFormatting += new Wisej.Web.DataGridViewCellFormattingEventHandler(this.gridTasks_CellFormatting);
+			this.gridTasks.BorderStyle = Wisej.Web.BorderStyle.None;
+			this.gridTasks.CssClass = "relay-grid";
+			this.gridTasks.RowTemplate.Height = 44;
 			//
 			// colTaskTitle
 			//
@@ -784,6 +707,7 @@ namespace RelayCrm.Views
 			this.tasksStrip.TabIndex = 0;
 			this.tasksStrip.TextAlign = Wisej.Web.ToolBarTextAlign.Right;
 			this.tasksStrip.BackColor = System.Drawing.SystemColors.Window;
+			this.tasksStrip.CssClass = "relay-toolbar";
 			//
 			// buttonAddTaskTab
 			//
@@ -794,11 +718,11 @@ namespace RelayCrm.Views
 			//
 			// ContactDetailView
 			//
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
+			this.BackColor = System.Drawing.Color.White;
 			this.Controls.Add(this.tabControl);
 			this.Controls.Add(this.toolStrip);
 			this.Controls.Add(this.panelHeader);
+			this.CssClass = "relay-card";
 			this.Name = "ContactDetailView";
 			this.Size = new System.Drawing.Size(1000, 600);
 			this.tasksStrip.ResumeLayout(false);
@@ -818,7 +742,6 @@ namespace RelayCrm.Views
 			this.tabPageOverview.PerformLayout();
 			this.flowSubtitle.ResumeLayout(false);
 			this.flowSubtitle.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureAvatar)).EndInit();
 			this.panelHeader.ResumeLayout(false);
 			this.panelHeader.PerformLayout();
 			this.toolStrip.ResumeLayout(false);
@@ -841,13 +764,13 @@ namespace RelayCrm.Views
 		private Wisej.Web.ToolBarButton buttonDelete;
 		private Wisej.Web.Panel panelHeader;
 		private Wisej.Web.LinkLabel linkBack;
-		private Wisej.Web.PictureBox pictureAvatar;
+		private Wisej.Web.Avatar avatar;
 		private Wisej.Web.Label labelName;
 		private Wisej.Web.FlowLayoutPanel flowSubtitle;
 		private Wisej.Web.Label labelTitleAt;
 		private Wisej.Web.LinkLabel linkCompany;
 		private Wisej.Web.Label labelDot1;
-		private Wisej.Web.Label labelStage;
+		private Wisej.Web.ChipLabel chipStage;
 		private Wisej.Web.Label labelDot2;
 		private Wisej.Web.Label labelOwner;
 		private Wisej.Web.TabPage tabPageOverview;
@@ -873,33 +796,23 @@ namespace RelayCrm.Views
 		private Wisej.Web.TextBox textBoxTags;
 		private Wisej.Web.Button buttonEditOverview;
 		private Wisej.Web.TabPage tabPageActivity;
-		private Wisej.Web.Label labelNoActivity;
-		private Wisej.Web.ListView listViewActivity;
-		private Wisej.Web.ColumnHeader columnActivityDate;
-		private Wisej.Web.ColumnHeader columnActivityType;
-		private Wisej.Web.ColumnHeader columnActivitySubject;
-		private Wisej.Web.ColumnHeader columnActivityDuration;
-		private Wisej.Web.ColumnHeader columnActivityUser;
-		private Wisej.Web.ColumnHeader columnActivityNotes;
+		private Wisej.Web.EmptyState emptyActivity;
+		private Wisej.Web.Timeline timelineActivity;
 		private Wisej.Web.ToolBar activityStrip;
 		private Wisej.Web.ToolBarButton buttonLogActivityTab;
 		private Wisej.Web.TabPage tabPageDeals;
-		private Wisej.Web.Label labelNoDeals;
-		private Wisej.Web.ListView listViewDeals;
-		private Wisej.Web.ColumnHeader columnDealTitle;
-		private Wisej.Web.ColumnHeader columnDealStage;
-		private Wisej.Web.ColumnHeader columnDealDescription;
-		private Wisej.Web.ColumnHeader columnDealMeta;
+		private Wisej.Web.EmptyState emptyDeals;
+		private Wisej.Web.ActionCardList listDeals;
 		private Wisej.Web.ToolBar dealsStrip;
 		private Wisej.Web.ToolBarButton buttonNewDealTab;
 		private Wisej.Web.TabPage tabPageTasks;
-		private Wisej.Web.Label labelNoTasks;
+		private Wisej.Web.EmptyState emptyTasks;
 		private Wisej.Web.DataGridView gridTasks;
 		private Wisej.Web.DataGridViewTextBoxColumn colTaskTitle;
 		private Wisej.Web.DataGridViewTextBoxColumn colTaskDue;
 		private Wisej.Web.DataGridViewTextBoxColumn colTaskPriority;
 		private Wisej.Web.DataGridViewTextBoxColumn colTaskAssignee;
-		private Wisej.Web.DataGridViewTextBoxColumn colTaskStatus;
+		private Wisej.Web.DataGridViewChipColumn colTaskStatus;
 		private Wisej.Web.ToolBar tasksStrip;
 		private Wisej.Web.ToolBarButton buttonAddTaskTab;
 	}
