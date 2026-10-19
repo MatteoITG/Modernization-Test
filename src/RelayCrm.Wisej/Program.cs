@@ -27,6 +27,8 @@ namespace RelayCrm
 			Application.ThreadException += Application_ThreadException;
 
 			// WinForms closes a modal dialog when its DialogResult is set; Wisej does it when this default is on.
+			// With it on, clicking a dialog's AcceptButton also sets DialogResult.OK and closes the dialog before
+			// the button's Click handler runs, so dialogs that validate in Click don't set AcceptButton.
 			Form.AutoCloseModalDialogDefault = true;
 
 			RelayDbContext.DatabasePath = Application.MapPath("relay.db");
