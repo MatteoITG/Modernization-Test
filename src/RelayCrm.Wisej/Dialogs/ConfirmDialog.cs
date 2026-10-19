@@ -1,0 +1,34 @@
+using System;
+using System.Drawing;
+using Wisej.Web;
+
+namespace RelayCrm.Dialogs
+{
+	/// <summary>
+	/// Asks the user to confirm an action ("Delete contact?"), with the action as the button text.
+	/// </summary>
+	public partial class ConfirmDialog : Form
+	{
+		public ConfirmDialog()
+		{
+			InitializeComponent();
+
+			// Wisej: the theme icon of the warning message box.
+			this.pictureIcon.ImageSource = "messagebox-warning";
+		}
+
+		/// <summary>
+		/// Shows the dialog and returns true when the user confirms.
+		/// </summary>
+		public static bool Ask(string title, string message, string confirmText = "OK")
+		{
+			using (var dialog = new ConfirmDialog())
+			{
+				dialog.Text = title;
+				dialog.labelMessage.Text = message;
+				dialog.buttonOk.Text = confirmText;
+				return dialog.ShowDialog(Form.ActiveForm) == DialogResult.OK;
+			}
+		}
+	}
+}

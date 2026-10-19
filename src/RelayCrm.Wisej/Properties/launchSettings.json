@@ -1,0 +1,13 @@
+{
+	"profiles": {
+		"RelayCrm.Wisej": {
+			"commandName": "Project",
+			"launchBrowser": true,
+			"launchUrl": "Default.html",
+			"applicationUrl": "http://localhost:5100",
+			"environmentVariables": {
+				"WEBSITE_PATH": "$(MSBuildProjectDirectory)"
+			}
+		}
+	}
+}

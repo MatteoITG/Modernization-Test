@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- Relay CRM migrated from Windows Forms (src/RelayCrm.WinForms) to Wisej.NET 4.2.
+       See docs/MIGRATION.md. -->
+  <PropertyGroup>
+    <!-- net8.0-windows is for the Visual Studio designer: on .NET 10 WinForms throws when Wisej controls
+         return a null CreateAccessibilityInstance(). The app itself runs on net10.0. -->
+    <TargetFrameworks>net8.0-windows;net10.0</TargetFrameworks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <RootNamespace>RelayCrm</RootNamespace>
+    <AssemblyName>RelayCrm.Wisej</AssemblyName>
+    <StartupObject>RelayCrm.Startup</StartupObject>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <NoWarn>CA1416;WFO1000</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Update="Default.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Web.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Default.html" />
+    <Content Include="Default.html">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Pre-release 4.2 test build from the local feed "packages" (see nuget.config). -->
+    <PackageReference Include="Wisej-4" Version="4.2.0-test.1" />
+    <PackageReference Include="Wisej-4-BootstrapIcons" Version="4.1.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RelayCrm.Core\RelayCrm.Core.csproj" />
+  </ItemGroup>
+
+  <!-- the SQLite database is created at run time next to the project: not part of the build. -->
+  <ItemGroup>
+    <None Remove="relay.db*" />
+    <Content Remove="relay.db*" />
+  </ItemGroup>
+
+</Project>
