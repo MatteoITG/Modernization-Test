@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+*.user
+relay.db
+relay.db-*
+# Wisej pre-release builds are internal: keep them out of the repository.
+packages/*.nupkg
+.wisej/catalog/
+.wisej/memory/local.md

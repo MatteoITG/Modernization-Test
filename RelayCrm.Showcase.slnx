@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+    <File Path="nuget.config" />
+  </Folder>
+  <Project Path="src/RelayCrm.Core/RelayCrm.Core.csproj" />
+  <Project Path="src/RelayCrm.WinForms/RelayCrm.WinForms.csproj" />
+  <Project Path="src/RelayCrm.Wisej41/RelayCrm.Wisej41.csproj" />
+  <Project Path="src/RelayCrm.Wisej42/RelayCrm.Wisej42.csproj" />
+</Solution>

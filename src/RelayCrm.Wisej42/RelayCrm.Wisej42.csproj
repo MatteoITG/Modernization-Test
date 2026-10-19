@@ -1,0 +1,65 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+	  <!-- net8.0-windows is for the Visual Studio designer: on .NET 10 WinForms throws when Wisej controls
+	       return a null CreateAccessibilityInstance(). The app itself runs on net10.0. -->
+	  <TargetFrameworks>net8.0-windows;net10.0</TargetFrameworks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <RootNamespace>RelayCrm</RootNamespace>
+    <AssemblyName>RelayCrm.Wisej42</AssemblyName>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <NoWarn>CA1416;WFO1000</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <StartupObject>$(RootNamespace).Startup</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="Dialogs\" />
+    <Folder Include="Services\" />
+    <Folder Include="Themes\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Default.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Web.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Default.html" />
+    <None Remove="favicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Default.html">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+    <Content Include="favicon.ico">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Pre-release 4.2 test build: it carries the modern controls (KpiPanel, ChartView, KanbanBoard...).
+         Drop its .nupkg into the local feed folder "packages" (see nuget.config). -->
+    <PackageReference Include="Wisej-4" Version="4.2.0-test.1" />
+    <PackageReference Include="Wisej-4-BootstrapIcons" Version="4.1.*" />
+    <PackageReference Include="Wisej-4-NavigationBar" Version="4.1.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RelayCrm.Core\RelayCrm.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="relay.db*" />
+    <Content Remove="relay.db*" />
+  </ItemGroup>
+</Project>

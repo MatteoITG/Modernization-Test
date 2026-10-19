@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Data and business logic shared by the WinForms, Wisej 4.1 and Wisej 4.2 versions of Relay CRM.
+       It has no reference to any user interface library. -->
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <RootNamespace>RelayCrm</RootNamespace>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <!-- EF Core 10 needs .NET 10; the Visual Studio designer targets of the Wisej apps run on .NET 8. -->
+  <ItemGroup Condition="'$(TargetFramework)'=='net10.0'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.12" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.*" />
+  </ItemGroup>
+
+</Project>
