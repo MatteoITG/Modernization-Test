@@ -1,0 +1,174 @@
+<UserControl x:Class="RelayCrm.Views.CompanyDetailView"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:controls="clr-namespace:RelayCrm.Controls">
+	<DockPanel Margin="16,10,16,12">
+		<TextBlock DockPanel.Dock="Top" Margin="0,0,0,8">
+			<Hyperlink Click="linkBack_Click">◀ Back to companies</Hyperlink>
+		</TextBlock>
+
+		<!-- header -->
+		<DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+			<Border DockPanel.Dock="Left" Width="52" Height="52" Margin="0,0,12,0" VerticalAlignment="Top" Background="#0EA5E9">
+				<TextBlock x:Name="labelInitials" Foreground="White" FontSize="18" FontWeight="SemiBold"
+						   HorizontalAlignment="Center" VerticalAlignment="Center" />
+			</Border>
+			<WrapPanel x:Name="panelActions" DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top" MaxWidth="560">
+				<Button Content="Log activity..." Margin="0,0,6,6" Click="buttonLogActivity_Click" />
+				<Button Content="New contact..." Margin="0,0,6,6" Click="buttonNewContact_Click" />
+				<Button Content="New deal..." Margin="0,0,6,6" Click="buttonNewDeal_Click" />
+				<Button Content="Add task..." Margin="0,0,6,6" Click="buttonAddTask_Click" />
+				<Button Content="Edit..." Margin="0,0,6,6" Click="buttonEdit_Click" />
+				<Button Content="Delete" Margin="0,0,0,6" Click="buttonDelete_Click" />
+			</WrapPanel>
+			<StackPanel>
+				<TextBlock x:Name="labelName" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap" />
+				<TextBlock Margin="0,2,0,0" TextWrapping="Wrap">
+					<Run x:Name="runSubtitle" /><Run Text="  " /><Hyperlink x:Name="linkWebsite" Click="linkWebsite_Click"><Run x:Name="runWebsite" /></Hyperlink>
+				</TextBlock>
+				<TextBlock x:Name="labelOwner" Style="{StaticResource Muted}" HorizontalAlignment="Left" Margin="0,2,0,0" TextWrapping="Wrap" />
+			</StackPanel>
+		</DockPanel>
+
+		<!-- KPIs -->
+		<UniformGrid DockPanel.Dock="Top" Rows="1" Margin="0,0,-8,0">
+			<controls:KpiTile x:Name="kpiOpenPipeline" Title="Open pipeline" />
+			<controls:KpiTile x:Name="kpiWonThisYear" Title="Won this year" />
+			<controls:KpiTile x:Name="kpiContacts" Title="Contacts" />
+			<controls:KpiTile x:Name="kpiLastActivity" Title="Last activity" />
+		</UniformGrid>
+
+		<TabControl x:Name="tabControl">
+			<TabItem Header="Overview">
+				<ScrollViewer VerticalScrollBarVisibility="Auto">
+					<Grid Margin="10" MaxWidth="760" HorizontalAlignment="Left">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="260" />
+							<ColumnDefinition Width="24" />
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="260" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<TextBlock Grid.Row="0" Text="Industry" Style="{StaticResource FieldLabel}" />
+						<TextBox Grid.Row="0" Grid.Column="1" x:Name="textBoxIndustry" Style="{StaticResource ReadOnlyField}" />
+						<TextBlock Grid.Row="0" Grid.Column="3" Text="Size" Style="{StaticResource FieldLabel}" />
+						<TextBox Grid.Row="0" Grid.Column="4" x:Name="textBoxSize" Style="{StaticResource ReadOnlyField}" />
+						<TextBlock Grid.Row="1" Text="Annual revenue" Style="{StaticResource FieldLabel}" />
+						<TextBox Grid.Row="1" Grid.Column="1" x:Name="textBoxRevenue" Style="{StaticResource ReadOnlyField}" />
+						<TextBlock Grid.Row="1" Grid.Column="3" Text="Owner" Style="{StaticResource FieldLabel}" />
+						<TextBox Grid.Row="1" Grid.Column="4" x:Name="textBoxOwner" Style="{StaticResource ReadOnlyField}" />
+						<TextBlock Grid.Row="2" Text="Website" Style="{StaticResource FieldLabel}" />
+						<TextBox Grid.Row="2" Grid.Column="1" x:Name="textBoxWebsite" Style="{StaticResource ReadOnlyField}" />
+						<TextBlock Grid.Row="2" Grid.Column="3" Text="Phone" Style="{StaticResource FieldLabel}" />
+						<TextBox Grid.Row="2" Grid.Column="4" x:Name="textBoxPhone" Style="{StaticResource ReadOnlyField}" />
+						<TextBlock Grid.Row="3" Text="Address" Style="{StaticResource FieldLabel}" />
+						<TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" x:Name="textBoxAddress" Style="{StaticResource ReadOnlyField}" />
+						<TextBlock Grid.Row="4" Text="City" Style="{StaticResource FieldLabel}" />
+						<TextBox Grid.Row="4" Grid.Column="1" x:Name="textBoxCity" Style="{StaticResource ReadOnlyField}" />
+						<TextBlock Grid.Row="4" Grid.Column="3" Text="Country" Style="{StaticResource FieldLabel}" />
+						<TextBox Grid.Row="4" Grid.Column="4" x:Name="textBoxCountry" Style="{StaticResource ReadOnlyField}" />
+						<TextBlock Grid.Row="5" Text="Tags" Style="{StaticResource FieldLabel}" />
+						<TextBox Grid.Row="5" Grid.Column="1" x:Name="textBoxTags" Style="{StaticResource ReadOnlyField}" />
+						<TextBlock Grid.Row="5" Grid.Column="3" Text="Updated" Style="{StaticResource FieldLabel}" />
+						<TextBox Grid.Row="5" Grid.Column="4" x:Name="textBoxUpdated" Style="{StaticResource ReadOnlyField}" />
+					</Grid>
+				</ScrollViewer>
+			</TabItem>
+
+			<TabItem x:Name="tabContacts" Header="Contacts">
+				<Grid>
+					<DataGrid x:Name="gridContacts" BorderThickness="0" MouseDoubleClick="gridContacts_MouseDoubleClick" ToolTip="Double-click to open the contact">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Name" Binding="{Binding FullName}" Width="1.5*" FontWeight="SemiBold" />
+							<DataGridTextColumn Header="Job title" Binding="{Binding Title}" Width="1.5*" />
+							<DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="2*" />
+							<DataGridTextColumn Header="Phone" Binding="{Binding Phone}" Width="*" />
+							<DataGridTemplateColumn Header="Stage" SortMemberPath="Stage" Width="90">
+								<DataGridTemplateColumn.CellTemplate>
+									<DataTemplate>
+										<TextBlock Text="{Binding Stage}" FontWeight="SemiBold" Foreground="{Binding Stage, Converter={StaticResource ToneBrush}, ConverterParameter=Stage}" />
+									</DataTemplate>
+								</DataGridTemplateColumn.CellTemplate>
+							</DataGridTemplateColumn>
+							<DataGridTextColumn Header="Last contacted" Binding="{Binding LastContacted}" Width="110" />
+						</DataGrid.Columns>
+					</DataGrid>
+					<TextBlock x:Name="emptyContacts" Text="No contacts at this company yet." Style="{StaticResource EmptyText}" />
+				</Grid>
+			</TabItem>
+
+			<TabItem x:Name="tabDeals" Header="Deals">
+				<Grid>
+					<DataGrid x:Name="gridDeals" BorderThickness="0" MouseDoubleClick="gridDeals_MouseDoubleClick" ToolTip="Double-click to open the deal">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Deal" Binding="{Binding Title}" Width="2*" FontWeight="SemiBold" />
+							<DataGridTextColumn Header="Stage" Binding="{Binding Stage}" Width="110" />
+							<DataGridTextColumn Header="Amount" Binding="{Binding Amount, Converter={StaticResource Fmt}, ConverterParameter=Money}" SortMemberPath="Amount" Width="100" ElementStyle="{StaticResource NumberCell}" />
+							<DataGridTextColumn Header="Close date" Binding="{Binding CloseDate, Converter={StaticResource Fmt}, ConverterParameter=Date}" SortMemberPath="CloseDate" Width="100" />
+							<DataGridTextColumn Header="Probability" Binding="{Binding Probability, StringFormat={}{0}%}" SortMemberPath="Probability" Width="80" ElementStyle="{StaticResource NumberCell}" />
+							<DataGridTextColumn Header="Owner" Binding="{Binding OwnerName}" Width="*" />
+						</DataGrid.Columns>
+					</DataGrid>
+					<TextBlock x:Name="emptyDeals" Text="No deals with this company yet." Style="{StaticResource EmptyText}" />
+				</Grid>
+			</TabItem>
+
+			<TabItem x:Name="tabActivity" Header="Activity">
+				<DockPanel>
+					<DockPanel DockPanel.Dock="Bottom" Margin="4">
+						<Button x:Name="buttonMore" DockPanel.Dock="Right" Content="Show more" Click="buttonMore_Click" />
+						<TextBlock x:Name="labelActivityCount" Style="{StaticResource Muted}" />
+					</DockPanel>
+					<ListBox x:Name="listActivity" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<StackPanel Margin="4,5">
+									<TextBlock>
+										<Run Text="{Binding Title, Mode=OneWay}" FontWeight="SemiBold" Foreground="{Binding TitleBrush, Mode=OneWay}" />
+										<Run Text="  " /><Run Text="{Binding Time, Mode=OneWay}" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+									</TextBlock>
+									<TextBlock Text="{Binding Description}" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+								</StackPanel>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</DockPanel>
+			</TabItem>
+
+			<TabItem x:Name="tabTasks" Header="Tasks">
+				<Grid>
+					<DataGrid x:Name="gridTasks" BorderThickness="0" MouseDoubleClick="gridTasks_MouseDoubleClick" ToolTip="Double-click to edit the task">
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Task" Binding="{Binding Title}" Width="2*" />
+							<DataGridTextColumn Header="Due" Binding="{Binding DueDate, Converter={StaticResource Fmt}, ConverterParameter=Date}" SortMemberPath="DueDate" Width="100" />
+							<DataGridTemplateColumn Header="Priority" SortMemberPath="Priority" Width="80">
+								<DataGridTemplateColumn.CellTemplate>
+									<DataTemplate>
+										<TextBlock Text="{Binding Priority}" Foreground="{Binding Priority, Converter={StaticResource ToneBrush}, ConverterParameter=Priority}" />
+									</DataTemplate>
+								</DataGridTemplateColumn.CellTemplate>
+							</DataGridTemplateColumn>
+							<DataGridTemplateColumn Header="Status" SortMemberPath="Status" Width="90">
+								<DataGridTemplateColumn.CellTemplate>
+									<DataTemplate>
+										<TextBlock Text="{Binding Status}" FontWeight="SemiBold" Foreground="{Binding Status, Converter={StaticResource ToneBrush}, ConverterParameter=TaskStatus}" />
+									</DataTemplate>
+								</DataGridTemplateColumn.CellTemplate>
+							</DataGridTemplateColumn>
+							<DataGridTextColumn Header="Assignee" Binding="{Binding AssigneeName}" Width="*" />
+						</DataGrid.Columns>
+					</DataGrid>
+					<TextBlock x:Name="emptyTasks" Text="No tasks for this company." Style="{StaticResource EmptyText}" />
+				</Grid>
+			</TabItem>
+		</TabControl>
+	</DockPanel>
+</UserControl>

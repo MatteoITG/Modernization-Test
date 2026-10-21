@@ -1,0 +1,108 @@
+{
+  "name": "Relay",
+  "colors": {
+    "relay-page": "#F5F6FA",
+    "relay-surface": "#FFFFFF",
+    "relay-border": "#E6E8EF",
+    "relay-border-strong": "#D5D9E3",
+    "relay-text": "#1F2433",
+    "relay-muted": "#6B7280",
+    "relay-primary": "#4F46E5",
+    "relay-primary-hover": "#4338CA",
+    "relay-primary-soft": "#EEF0FE",
+    "relay-hover": "#F3F4F8",
+    "primary": "#4F46E5",
+    "highlight": "#4F46E5",
+    "focusFrame": "#A5B4FC",
+    "focusShadow": "#E0E7FF",
+    "switchOn": "#4F46E5",
+    "activeCaption": "#4F46E5",
+    "menuSelected": "#4F46E5",
+    "windowText": "#1F2433",
+    "buttonText": "#1F2433",
+    "windowFrame": "#E1E4EC",
+    "table-row": "#1F2433",
+    "table-row-line": "#EEF0F5",
+    "table-column-line": "#EEF0F5",
+    "table-row-selected": "#1F2433",
+    "table-row-background-selected": "#EEF0FE",
+    "table-row-background-focused": "#F6F7FF",
+    "table-row-background-focused-selected": "#E6E8FF"
+  },
+  "fonts": {
+    "relay-title": {
+      "size": 20,
+      "family": [ "Segoe UI", "Roboto", "Helvetica Neue", "Arial" ],
+      "weight": 600
+    },
+    "relay-card-title": {
+      "size": 14,
+      "family": [ "Segoe UI", "Roboto", "Helvetica Neue", "Arial" ],
+      "weight": 600
+    },
+    "relay-grid-header": {
+      "size": 12,
+      "family": [ "Segoe UI", "Roboto", "Helvetica Neue", "Arial" ],
+      "weight": 600
+    }
+  },
+  "appearances": {
+    "relay-page-title": {
+      "inherit": "label",
+      "states": {
+        "default": {
+          "properties": {
+            "font": "relay-title",
+            "textColor": "relay-text"
+          }
+        }
+      }
+    },
+    "relay-card-title": {
+      "inherit": "label",
+      "states": {
+        "default": {
+          "properties": {
+            "font": "relay-card-title",
+            "textColor": "relay-text"
+          }
+        }
+      }
+    },
+    "table-header-cell": {
+      "inherit": "table-header-cell",
+      "states": {
+        "default": {
+          "properties": {
+            "font": "relay-grid-header",
+            "textColor": "relay-muted",
+            "padding": [ 0, 10 ]
+          },
+          "styles": {
+            "width": [ 0, 0, 1, 0 ],
+            "color": "relay-border"
+          }
+        },
+        "hovered": {
+          "styles": {
+            "backgroundColor": "relay-hover"
+          }
+        }
+      }
+    },
+    "table-cell": {
+      "inherit": "table-cell",
+      "components": {
+        "content": {
+          "states": {
+            "default": {
+              "properties": {
+                "padding": [ 0, 10, 0, 10 ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

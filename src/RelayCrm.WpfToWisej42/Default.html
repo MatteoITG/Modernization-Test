@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Relay CRM</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="Assets/Icons/relay-logo.svg" />
+    <link rel="stylesheet" href="Themes/relay.css" />
+    <script src="wisej.wx"></script>
+    <style>
+        #splash {
+            position: absolute;
+            background: url("Images/logo-wisej-white.png");
+            background-position: center center;
+            background-size: 175px 175px;
+            background-repeat: no-repeat;
+            background-color: #4F46E5;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        #loading {
+            color: white;
+            font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+            font-weight: 300;
+            font-size: 18px;
+            letter-spacing: 5px;
+            text-align: center;
+            width: 250px;
+            position: absolute;
+            bottom: calc(16% + 30px);
+            margin-left: 50%;
+            left: -125px;
+        }
+
+        #loading-bar {
+            background-color: #7C75EE;
+            width: 250px;
+            height: 13px;
+            margin-left: 50%;
+            left: -125px;
+            border-radius: 13px;
+            position: absolute;
+            bottom: 16%;
+        }
+
+        #loading-progress {
+            background-color: #E0E7FF;
+            height: 100%;
+            border-radius: 13px;
+            width: 10px;
+            transition: width 3s, left 3s;
+            position: absolute;
+        }
+    </style>
+</head>
+<body style="padding: 0px; margin: 0px">
+    <div id="splash">
+        <div id="loading">RELAY CRM</div>
+        <div id="loading-bar">
+            <div id="loading-progress"></div>
+        </div>
+    </div>
+    <script>
+        var splash = document.getElementById("splash");
+        var loadingProgress = document.getElementById("loading-progress");
+        splash.style.opacity = 1;
+        setTimeout(function () {
+            loadingProgress.style.width = "100%";
+            loadingProgress.style.left = "0%";
+        }, 1);
+
+        Wisej.onLoad = function () {
+            var splash = document.getElementById("splash");
+            if (splash)
+                splash.parentNode.removeChild(splash);
+        }
+    </script>
+</body>
+</html>

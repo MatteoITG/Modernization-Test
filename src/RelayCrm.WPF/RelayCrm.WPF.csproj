@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The classic WPF version of Relay CRM: stock controls, the system theme, the shared Core for data.
+       The charts are drawn by hand (Controls/BarChart.cs), so there is no chart package. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>RelayCrm</RootNamespace>
+    <AssemblyName>RelayCrm.WPF</AssemblyName>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RelayCrm.Core\RelayCrm.Core.csproj" />
+  </ItemGroup>
+
+</Project>

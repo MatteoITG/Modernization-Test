@@ -1,0 +1,31 @@
+{
+	"iisSettings": {
+		"windowsAuthentication": false,
+		"anonymousAuthentication": true,
+		"iisExpress": {
+			"applicationUrl": "http://localhost:54439",
+			"sslPort": 0
+		}
+	},
+	"profiles": {
+		"RelayCrm": {
+			"commandName": "Project",
+			"launchBrowser": true,
+			"launchUrl": "Default.html",
+			"applicationUrl": "http://localhost:5200",
+			"environmentVariables": {
+				"WEBSITE_PATH": "$(MSBuildProjectDirectory)"
+			}
+		},
+		"WSL": {
+			"commandName": "WSL2",
+			"launchBrowser": true,
+			"launchUrl": "http://localhost:5200/Default.html",
+			"environmentVariables": {
+				"ASPNETCORE_URLS": "http://localhost:5200",
+				"WEBSITE_PATH": "$(MSBuildProjectDirectory)"
+			},
+			"distributionName": ""
+		}
+	}
+}

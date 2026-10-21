@@ -1,0 +1,75 @@
+/*
+  Relay CRM look, applied through the CssClass of the migrated controls (step 2: "Theming").
+  The colours and fonts of the theme itself are in Relay.mixin.theme.
+*/
+
+/* Soft grey page behind the cards. */
+.relay-page {
+	background-color: #F5F6FA !important;
+}
+
+/* White card with 12 px radius and a subtle shadow (panels, group boxes, grids). */
+.relay-card {
+	background-color: #FFFFFF !important;
+	border-radius: 12px !important;
+	box-shadow: 0 1px 3px rgba(20, 24, 40, 0.06), 0 1px 2px rgba(20, 24, 40, 0.04) !important;
+	border: 1px solid #ECEEF3 !important;
+}
+
+/* The legend of a group box used as a card title. */
+.relay-card > div[name="legend"],
+.relay-card .qx-legend {
+	font-weight: 600 !important;
+	color: #1F2433 !important;
+}
+
+/* White header and sidebar of the shell. */
+.relay-header {
+	background-color: #FFFFFF !important;
+	border-bottom: 1px solid #E6E8EF !important;
+}
+
+.relay-sidebar {
+	border-right: 1px solid #E6E8EF !important;
+}
+
+/* Secondary text. */
+.relay-muted {
+	color: #6B7280 !important;
+}
+
+/* Primary (accent) button. */
+.relay-primary {
+	background-color: #4F46E5 !important;
+	border-color: #4F46E5 !important;
+	color: #FFFFFF !important;
+	border-radius: 8px !important;
+}
+
+.relay-primary * {
+	color: #FFFFFF !important;
+}
+
+/* Secondary (outlined) button. */
+.relay-secondary {
+	background-color: #FFFFFF !important;
+	border: 1px solid #E1E4EC !important;
+	border-radius: 8px !important;
+}
+
+/* Toolbars of the pages: white, no border, rounded buttons. */
+.relay-toolbar {
+	background-color: #FFFFFF !important;
+	border: none !important;
+	border-bottom: 1px solid #EEF0F5 !important;
+}
+
+/* Grids inside cards: no outer border. */
+.relay-grid {
+	border: none !important;
+}
+
+/* Search boxes: rounded. */
+.relay-search {
+	border-radius: 8px !important;
+}

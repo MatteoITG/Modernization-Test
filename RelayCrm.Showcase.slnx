@@ -5,5 +5,7 @@
   </Folder>
   <Project Path="src/RelayCrm.Core/RelayCrm.Core.csproj" />
   <Project Path="src/RelayCrm.WinForms/RelayCrm.WinForms.csproj" />
+  <Project Path="src/RelayCrm.WPF/RelayCrm.WPF.csproj" />
+  <Project Path="src/RelayCrm.WpfToWisej42/RelayCrm.WpfToWisej42.csproj" />
   <Project Path="src/RelayCrm.Wisej/RelayCrm.Wisej.csproj" />
 </Solution>

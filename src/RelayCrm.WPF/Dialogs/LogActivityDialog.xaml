@@ -1,0 +1,58 @@
+<Window x:Class="RelayCrm.Dialogs.LogActivityDialog"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		Title="Log activity" Width="500" SizeToContent="Height"
+		WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False"
+		Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+	<StackPanel Margin="14">
+		<TextBlock x:Name="labelRelated" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,0,10" />
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="10" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="8" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="8" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="8" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+
+			<TextBlock Grid.Row="0" Text="Type:" Style="{StaticResource FieldLabel}" />
+			<StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+				<RadioButton x:Name="radioCall" Content="Call" GroupName="Type" Margin="0,0,16,0" Checked="radioType_Checked" />
+				<RadioButton x:Name="radioEmail" Content="Email" GroupName="Type" Margin="0,0,16,0" Checked="radioType_Checked" />
+				<RadioButton x:Name="radioMeeting" Content="Meeting" GroupName="Type" Margin="0,0,16,0" Checked="radioType_Checked" />
+				<RadioButton x:Name="radioNote" Content="Note" GroupName="Type" Checked="radioType_Checked" />
+			</StackPanel>
+
+			<TextBlock Grid.Row="2" Text="When:" Style="{StaticResource FieldLabel}" />
+			<StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+				<DatePicker x:Name="datePickerDate" Width="160" />
+				<TextBox x:Name="textBoxTime" Width="60" Margin="8,0,0,0" ToolTip="Time (HH:mm)" TextChanged="textBox_TextChanged" />
+				<TextBlock Text="Duration:" Style="{StaticResource FieldLabel}" Margin="18,0,8,0" />
+				<TextBox x:Name="textBoxDuration" Width="50" TextChanged="textBox_TextChanged" />
+				<TextBlock Text="min" Style="{StaticResource Muted}" Margin="6,0,0,0" />
+			</StackPanel>
+
+			<TextBlock Grid.Row="4" Text="Subject:" Style="{StaticResource FieldLabel}" />
+			<TextBox Grid.Row="4" Grid.Column="1" x:Name="textBoxSubject" TextChanged="textBox_TextChanged" />
+
+			<TextBlock Grid.Row="6" Text="Notes:" Style="{StaticResource FieldLabel}" VerticalAlignment="Top" Margin="0,3,12,0" />
+			<TextBox Grid.Row="6" Grid.Column="1" x:Name="textBoxBody" Height="110" AcceptsReturn="True" TextWrapping="Wrap"
+					 VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto" />
+		</Grid>
+
+		<TextBlock x:Name="labelError" Style="{StaticResource ErrorText}" Margin="0,10,0,0" />
+
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+			<Button Content="Save" IsDefault="True" Style="{StaticResource DialogButton}" Click="buttonSave_Click" />
+			<Button Content="Cancel" IsCancel="True" Style="{StaticResource DialogButton}" />
+		</StackPanel>
+	</StackPanel>
+</Window>

@@ -1,0 +1,17 @@
+<Window x:Class="RelayCrm.Dialogs.LostReasonDialog"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		Title="Deal lost" Width="420" SizeToContent="Height"
+		WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False"
+		Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+	<StackPanel Margin="14">
+		<TextBlock x:Name="labelMessage" TextWrapping="Wrap" Margin="0,0,0,8" />
+		<TextBlock Text="Pick a common reason or type your own:" Style="{StaticResource Muted}" Margin="0,0,0,4" />
+		<ComboBox x:Name="comboBoxReason" IsEditable="True" />
+		<TextBlock x:Name="labelError" Style="{StaticResource ErrorText}" Margin="0,8,0,0" />
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+			<Button Content="Mark as lost" IsDefault="True" Style="{StaticResource DialogButton}" Click="buttonSave_Click" />
+			<Button Content="Cancel" IsCancel="True" Style="{StaticResource DialogButton}" />
+		</StackPanel>
+	</StackPanel>
+</Window>

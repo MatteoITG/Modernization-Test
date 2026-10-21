@@ -1,0 +1,83 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- The WPF version of Relay CRM (src/RelayCrm.WPF) migrated to a Wisej.NET 4.2 web app.
+       XAML became Wisej designer code, the code-behind, the services and the shared Core were kept. See MIGRATION.md. -->
+  <PropertyGroup>
+	  <!-- net8.0-windows is for the Visual Studio designer: on .NET 10 WinForms throws when Wisej controls
+	       return a null CreateAccessibilityInstance(). The app itself runs on net10.0. -->
+	  <TargetFrameworks>net8.0-windows;net10.0</TargetFrameworks>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <RootNamespace>RelayCrm</RootNamespace>
+    <AssemblyName>RelayCrm.WpfToWisej42</AssemblyName>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <NoWarn>CA1416;WFO1000</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <StartupObject>$(RootNamespace).Startup</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Controls\" />
+    <Folder Include="Dialogs\" />
+    <Folder Include="Services\" />
+    <Folder Include="Views\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Default.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Web.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Step 2: the Relay theme mixin is embedded; Wisej loads the resources named {Assembly}.Themes.*.mixin.theme
+       after the theme. The client profiles, the stylesheet and the logo are served next to Default.html. -->
+  <ItemGroup>
+    <None Remove="Themes\Relay.mixin.theme" />
+    <EmbeddedResource Include="Themes\Relay.mixin.theme" LogicalName="$(AssemblyName).Themes.Relay.mixin.theme" />
+    <Content Update="ClientProfiles.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="Themes\relay.css" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="Assets\**\*.svg" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="Images\*.png" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Default.html" />
+    <None Remove="favicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Default.html">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+    <Content Include="favicon.ico">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Pre-release 4.2 test build: it carries the modern controls (ChartView, Sparkline, DataGridViewSparklineColumn...).
+         Drop its .nupkg into the local feed folder "packages" (see nuget.config). -->
+    <PackageReference Include="Wisej-4" Version="4.2.0-test.1" />
+    <!-- Step 2: the navigation bar of the shell and the Bootstrap icons of menus, toolbars and empty states. -->
+    <PackageReference Include="Wisej-4-BootstrapIcons" Version="4.1.*" />
+    <PackageReference Include="Wisej-4-NavigationBar" Version="4.1.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RelayCrm.Core\RelayCrm.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="relay.db*" />
+    <Content Remove="relay.db*" />
+    <None Remove="*.errors.log" />
+    <Content Remove="*.errors.log" />
+  </ItemGroup>
+</Project>

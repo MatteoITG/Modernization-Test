@@ -1,0 +1,90 @@
+<UserControl x:Class="RelayCrm.Views.CompaniesView"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:controls="clr-namespace:RelayCrm.Controls">
+	<DockPanel Margin="16,12,16,12">
+		<DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+			<Button DockPanel.Dock="Right" Content="New company..." Click="buttonNew_Click" />
+			<TextBlock Text="Companies" Style="{StaticResource PageTitle}" />
+			<TextBlock x:Name="labelCount" Style="{StaticResource Muted}" Margin="12,4,0,0" />
+		</DockPanel>
+
+		<DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+			<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+				<Button x:Name="buttonAdvanced" Content="Advanced filter..." Margin="8,0,0,0" Click="buttonAdvanced_Click" />
+				<Button x:Name="buttonColumns" Content="Columns ▾" Margin="8,0,0,0" Click="buttonColumns_Click" />
+				<Button Content="Export..." Margin="8,0,0,0" Click="buttonExport_Click" ToolTip="Exports every matching company, not only this page" />
+			</StackPanel>
+			<TextBlock Text="Search:" Style="{StaticResource FieldLabel}" Margin="0,0,6,0" />
+			<TextBox x:Name="textBoxSearch" Width="260" HorizontalAlignment="Left" TextChanged="textBoxSearch_TextChanged" />
+		</DockPanel>
+
+		<StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+			<RadioButton x:Name="radioAll" GroupName="Quick" Margin="0,0,12,0" Checked="radioQuick_Checked" />
+			<RadioButton x:Name="radioMine" GroupName="Quick" Margin="0,0,12,0" Checked="radioQuick_Checked" />
+			<RadioButton x:Name="radioOpenDeals" GroupName="Quick" Margin="0,0,12,0" Checked="radioQuick_Checked" />
+			<RadioButton x:Name="radioCustomers" GroupName="Quick" Checked="radioQuick_Checked" />
+		</StackPanel>
+
+		<Border x:Name="panelFilter" DockPanel.Dock="Top" Margin="0,0,0,8" Padding="8,4" Visibility="Collapsed"
+				Background="{DynamicResource {x:Static SystemColors.InfoBrushKey}}" BorderThickness="1"
+				BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
+			<TextBlock TextWrapping="Wrap" Foreground="{DynamicResource {x:Static SystemColors.InfoTextBrushKey}}">
+				<Run Text="Filter: " FontWeight="SemiBold" /><Run x:Name="runFilter" />
+				<Run Text="  " /><Hyperlink Click="linkClearFilter_Click">Clear</Hyperlink>
+			</TextBlock>
+		</Border>
+
+		<DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+			<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+				<Button x:Name="buttonPrevious" Content="◀ Previous" Margin="0,0,6,0" Click="buttonPrevious_Click" />
+				<Button x:Name="buttonNext" Content="Next ▶" Click="buttonNext_Click" />
+			</StackPanel>
+			<TextBlock x:Name="labelPage" Style="{StaticResource Muted}" />
+		</DockPanel>
+
+		<Grid>
+			<DataGrid x:Name="grid" MouseDoubleClick="grid_MouseDoubleClick" ToolTip="Double-click to open the company; right-click for more">
+				<DataGrid.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="_Open" FontWeight="Bold" Click="menuOpen_Click" />
+						<MenuItem Header="_Edit..." Click="menuEdit_Click" />
+						<Separator />
+						<MenuItem Header="Log _activity..." Click="menuLogActivity_Click" />
+						<MenuItem Header="New _deal..." Click="menuNewDeal_Click" />
+						<Separator />
+						<MenuItem Header="De_lete" Click="menuDelete_Click" />
+					</ContextMenu>
+				</DataGrid.ContextMenu>
+				<DataGrid.Columns>
+					<DataGridTextColumn x:Name="colName" Header="Name" Binding="{Binding Name}" Width="2*" MinWidth="140" FontWeight="SemiBold" />
+					<DataGridTextColumn Header="Industry" Binding="{Binding Industry}" Width="1.2*" />
+					<DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="70" Visibility="Collapsed" />
+					<DataGridTextColumn Header="Country" Binding="{Binding Country}" Width="*" />
+					<DataGridTextColumn Header="City" Binding="{Binding City}" Width="*" Visibility="Collapsed" />
+					<DataGridTextColumn Header="Owner" Binding="{Binding OwnerName}" Width="1.2*" />
+					<DataGridTextColumn Header="Contacts" Binding="{Binding Contacts}" Width="70" ElementStyle="{StaticResource NumberCell}" />
+					<DataGridTextColumn Header="Open deals" Binding="{Binding OpenDeals}" Width="80" ElementStyle="{StaticResource NumberCell}" Visibility="Collapsed" />
+					<DataGridTextColumn Header="Open value" Binding="{Binding OpenValue, Converter={StaticResource Fmt}, ConverterParameter=Money}" SortMemberPath="OpenValue" Width="100" ElementStyle="{StaticResource NumberCell}" />
+					<DataGridTextColumn Header="Won revenue" Binding="{Binding WonRevenue, Converter={StaticResource Fmt}, ConverterParameter=Money}" SortMemberPath="WonRevenue" Width="100" ElementStyle="{StaticResource NumberCell}" />
+					<DataGridTemplateColumn Header="Won, 12 months" SortMemberPath="WonTrend" Width="110" CanUserSort="False">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<controls:Sparkline Values="{Binding WonTrend}" Height="18" Margin="0,2" />
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+					<DataGridTextColumn Header="Annual revenue" Binding="{Binding AnnualRevenue, Converter={StaticResource Fmt}, ConverterParameter=MoneyShort}" SortMemberPath="AnnualRevenue" Width="100" ElementStyle="{StaticResource NumberCell}" Visibility="Collapsed" />
+					<DataGridTextColumn Header="Tag" Binding="{Binding FirstTag}" Width="90" Foreground="#0054A6" />
+					<DataGridTextColumn Header="Tags" Binding="{Binding Tags}" Width="*" Visibility="Collapsed" />
+				</DataGrid.Columns>
+			</DataGrid>
+			<StackPanel x:Name="emptyState" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Collapsed">
+				<TextBlock x:Name="labelEmpty" Text="No companies match" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" />
+				<TextBlock Style="{StaticResource Muted}" HorizontalAlignment="Center" Margin="0,4,0,0">
+					Try another search or <Hyperlink Click="linkClearFilter_Click">clear the filters</Hyperlink>.
+				</TextBlock>
+			</StackPanel>
+		</Grid>
+	</DockPanel>
+</UserControl>

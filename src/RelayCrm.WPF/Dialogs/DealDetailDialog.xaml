@@ -1,0 +1,155 @@
+<Window x:Class="RelayCrm.Dialogs.DealDetailDialog"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		Title="Deal" Width="820" Height="640" MinWidth="640" MinHeight="480"
+		WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+		Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+	<DockPanel Margin="12">
+
+		<!-- header -->
+		<StackPanel DockPanel.Dock="Top">
+			<TextBlock x:Name="labelTitle" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap" />
+			<TextBlock Margin="0,4,0,0">
+				<Hyperlink x:Name="linkCompany" Click="linkCompany_Click"><Run x:Name="runCompany" /></Hyperlink>
+				<Run Text=" · " /><Run x:Name="runAmount" FontWeight="SemiBold" />
+				<Run Text=" · " /><Run x:Name="runStage" FontWeight="SemiBold" />
+				<Run Text=" · Owner: " /><Run x:Name="runOwner" />
+			</TextBlock>
+		</StackPanel>
+
+		<!-- stage progress: open stages in order, then Won or Lost -->
+		<ItemsControl x:Name="listSteps" DockPanel.Dock="Top" Margin="0,10,0,10" Focusable="False">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<UniformGrid Rows="1" />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Border Background="{Binding Background}" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
+							BorderThickness="1" Margin="0,0,2,0" Padding="6,4" ToolTip="{Binding ToolTip}">
+						<StackPanel>
+							<TextBlock Text="{Binding Text}" Foreground="{Binding Foreground}" FontWeight="{Binding Weight}"
+									   TextTrimming="CharacterEllipsis" TextDecorations="{Binding Decorations}" />
+							<TextBlock Text="{Binding Description}" Foreground="{Binding Foreground}" FontSize="11" />
+						</StackPanel>
+					</Border>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+		<!-- buttons -->
+		<DockPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
+			<Button DockPanel.Dock="Right" Content="Close" IsCancel="True" Style="{StaticResource DialogButton}" Click="buttonClose_Click" />
+			<StackPanel Orientation="Horizontal">
+				<Button x:Name="buttonEdit" Content="Edit..." Margin="0,0,8,0" Click="buttonEdit_Click" />
+				<Button x:Name="buttonLogActivity" Content="Log activity..." Margin="0,0,8,0" Click="buttonLogActivity_Click" />
+				<Button x:Name="buttonAddTask" Content="Add task..." Margin="0,0,8,0" Click="buttonAddTask_Click" />
+				<Button x:Name="buttonDelete" Content="Delete" Click="buttonDelete_Click" />
+			</StackPanel>
+		</DockPanel>
+
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+
+			<GroupBox Header="Details" Grid.Row="0" Grid.Column="0">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<TextBlock Grid.Row="0" Text="Amount" Style="{StaticResource Muted}" Margin="0,2,16,2" />
+					<TextBlock Grid.Row="0" Grid.Column="1" x:Name="labelAmountValue" Margin="0,2" />
+					<TextBlock Grid.Row="1" Text="Expected close" Style="{StaticResource Muted}" Margin="0,2,16,2" />
+					<TextBlock Grid.Row="1" Grid.Column="1" x:Name="labelCloseValue" Margin="0,2" />
+					<TextBlock Grid.Row="2" Text="Probability" Style="{StaticResource Muted}" Margin="0,2,16,2" />
+					<TextBlock Grid.Row="2" Grid.Column="1" x:Name="labelProbabilityValue" Margin="0,2" />
+					<TextBlock Grid.Row="3" Text="Primary contact" Style="{StaticResource Muted}" Margin="0,2,16,2" />
+					<TextBlock Grid.Row="3" Grid.Column="1" Margin="0,2">
+						<Hyperlink x:Name="linkContact" Click="linkContact_Click"><Run x:Name="runContact" /></Hyperlink>
+					</TextBlock>
+					<TextBlock Grid.Row="4" Text="Created" Style="{StaticResource Muted}" Margin="0,2,16,2" />
+					<TextBlock Grid.Row="4" Grid.Column="1" x:Name="labelCreatedValue" Margin="0,2" />
+					<TextBlock Grid.Row="5" x:Name="labelCapClosed" Text="Closed" Style="{StaticResource Muted}" Margin="0,2,16,2" />
+					<TextBlock Grid.Row="5" Grid.Column="1" x:Name="labelClosedValue" Margin="0,2" />
+					<TextBlock Grid.Row="6" x:Name="labelCapLost" Text="Lost reason" Style="{StaticResource Muted}" Margin="0,2,16,2" />
+					<TextBlock Grid.Row="6" Grid.Column="1" x:Name="labelLostValue" Margin="0,2" TextWrapping="Wrap" />
+				</Grid>
+			</GroupBox>
+
+			<GroupBox Header="Contacts" Grid.Row="0" Grid.Column="1" Margin="0,0,0,8">
+				<Grid>
+					<ListBox x:Name="listContacts" MaxHeight="150" MouseDoubleClick="listContacts_MouseDoubleClick"
+							 ToolTip="Double-click to open the contact">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<TextBlock>
+									<Run Text="{Binding Name, Mode=OneWay}" FontWeight="SemiBold" />
+									<Run Text="{Binding Title, Mode=OneWay}" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+								</TextBlock>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+					<TextBlock x:Name="labelNoContacts" Text="No contacts at this company." Style="{StaticResource EmptyText}" />
+				</Grid>
+			</GroupBox>
+
+			<TabControl Grid.Row="1" Grid.ColumnSpan="2">
+				<TabItem x:Name="tabActivity" Header="Activity">
+					<Grid>
+						<ListBox x:Name="listActivities" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<StackPanel Margin="2,4">
+										<TextBlock>
+											<Run Text="{Binding Title, Mode=OneWay}" FontWeight="SemiBold" Foreground="{Binding TitleBrush, Mode=OneWay}" />
+											<Run Text="  " /><Run Text="{Binding Time, Mode=OneWay}" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+										</TextBlock>
+										<TextBlock Text="{Binding Description}" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+									</StackPanel>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+						<TextBlock x:Name="labelNoActivity" Text="No activities logged for this deal yet." Style="{StaticResource EmptyText}" />
+					</Grid>
+				</TabItem>
+				<TabItem x:Name="tabTasks" Header="Tasks">
+					<Grid>
+						<ListBox x:Name="listTasks" BorderThickness="0" MouseDoubleClick="listTasks_MouseDoubleClick"
+								 ToolTip="Double-click to edit the task">
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<DockPanel Margin="2,3">
+										<CheckBox IsChecked="{Binding Done, Mode=OneWay}" IsEnabled="False" VerticalAlignment="Center" Margin="0,0,8,0" />
+										<TextBlock>
+											<Run Text="{Binding Title, Mode=OneWay}" FontWeight="SemiBold" />
+											<Run Text="  " /><Run Text="{Binding DueText, Mode=OneWay}" />
+											<Run Text=" · " /><Run Text="{Binding AssigneeName, Mode=OneWay}" Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+										</TextBlock>
+									</DockPanel>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+						<TextBlock x:Name="labelNoTasks" Text="No tasks for this deal." Style="{StaticResource EmptyText}" />
+					</Grid>
+				</TabItem>
+			</TabControl>
+		</Grid>
+	</DockPanel>
+</Window>

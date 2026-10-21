@@ -1,0 +1,113 @@
+<UserControl x:Class="RelayCrm.Views.ActivitiesView"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<DockPanel Margin="16,12,16,12">
+		<DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+			<StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+				<RadioButton x:Name="radioCalendar" Content="Calendar" GroupName="Mode" IsChecked="True" Margin="0,0,12,0" VerticalAlignment="Center" Checked="radioMode_Checked" />
+				<RadioButton x:Name="radioList" Content="List" GroupName="Mode" Margin="0,0,16,0" VerticalAlignment="Center" Checked="radioMode_Checked" />
+				<Button x:Name="buttonExport" Content="Export..." Margin="0,0,8,0" Visibility="Collapsed" Click="buttonExport_Click" />
+				<Button Content="Log activity..." Click="buttonLog_Click" />
+			</StackPanel>
+			<TextBlock Text="Activities" Style="{StaticResource PageTitle}" />
+			<TextBlock x:Name="labelCount" Style="{StaticResource Muted}" Margin="12,4,0,0" />
+		</DockPanel>
+
+		<DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+			<StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+				<TextBlock Text="User:" Style="{StaticResource FieldLabel}" Margin="0,0,6,0" />
+				<ComboBox x:Name="comboBoxUser" Width="160" DisplayMemberPath="Text" SelectionChanged="filter_Changed" />
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+				<TextBlock Text="Type:" Style="{StaticResource FieldLabel}" Margin="0,0,8,0" />
+				<RadioButton x:Name="radioAll" Content="All" GroupName="Type" IsChecked="True" Margin="0,0,12,0" Checked="filter_Changed" />
+				<RadioButton x:Name="radioCall" Content="Calls" GroupName="Type" Margin="0,0,12,0" Checked="filter_Changed" />
+				<RadioButton x:Name="radioEmail" Content="Emails" GroupName="Type" Margin="0,0,12,0" Checked="filter_Changed" />
+				<RadioButton x:Name="radioMeeting" Content="Meetings" GroupName="Type" Margin="0,0,12,0" Checked="filter_Changed" />
+				<RadioButton x:Name="radioNote" Content="Notes" GroupName="Type" Checked="filter_Changed" />
+			</StackPanel>
+		</DockPanel>
+
+		<Grid>
+			<!-- calendar: the weeks of a month; double-click a day to plan a meeting -->
+			<DockPanel x:Name="panelCalendar">
+				<DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+					<StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+						<Button Content="◀" MinWidth="32" ToolTip="Previous month" Click="buttonPrevious_Click" />
+						<Button Content="Today" Margin="4,0" Click="buttonToday_Click" />
+						<Button Content="▶" MinWidth="32" ToolTip="Next month" Click="buttonNext_Click" />
+					</StackPanel>
+					<TextBlock x:Name="labelMonth" FontSize="15" FontWeight="SemiBold" Margin="14,0,0,0" VerticalAlignment="Center" />
+				</DockPanel>
+				<UniformGrid x:Name="headerDays" DockPanel.Dock="Top" Rows="1" Columns="7" />
+				<ItemsControl x:Name="calendar" BorderThickness="1,1,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<UniformGrid Columns="7" Rows="6" />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Border BorderThickness="0,0,1,1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
+									Background="{Binding Background}" MouseLeftButtonDown="day_MouseLeftButtonDown"
+									ToolTip="Double-click to plan a meeting on this day">
+								<DockPanel Margin="4,2" ClipToBounds="True">
+									<TextBlock DockPanel.Dock="Top" Text="{Binding DayText}" FontWeight="{Binding DayWeight}" Foreground="{Binding DayBrush}" />
+									<TextBlock DockPanel.Dock="Bottom" Text="{Binding MoreText}" FontSize="11"
+											   Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+									<ItemsControl ItemsSource="{Binding Items}">
+										<ItemsControl.ItemTemplate>
+											<DataTemplate>
+												<TextBlock FontSize="11" TextTrimming="CharacterEllipsis" Cursor="Hand" Margin="0,1,0,0"
+														   Foreground="{Binding Brush}" ToolTip="{Binding ToolTip}"
+														   MouseLeftButtonUp="appointment_MouseLeftButtonUp">
+													<Run Text="{Binding Time, Mode=OneWay}" FontWeight="SemiBold" /> <Run Text="{Binding Row.Subject, Mode=OneWay}" />
+												</TextBlock>
+											</DataTemplate>
+										</ItemsControl.ItemTemplate>
+									</ItemsControl>
+								</DockPanel>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</DockPanel>
+
+			<!-- list -->
+			<Grid x:Name="panelList" Visibility="Collapsed">
+				<DataGrid x:Name="grid" MouseDoubleClick="grid_MouseDoubleClick" ToolTip="Double-click to open the related record; right-click for more">
+					<DataGrid.ContextMenu>
+						<ContextMenu>
+							<MenuItem Header="_Open related record" FontWeight="Bold" Click="menuOpen_Click" />
+							<Separator />
+							<MenuItem Header="_Delete" Click="menuDelete_Click" />
+						</ContextMenu>
+					</DataGrid.ContextMenu>
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource Fmt}, ConverterParameter=DateTime}" SortMemberPath="Date" Width="150" />
+						<DataGridTemplateColumn Header="Type" SortMemberPath="TypeName" Width="80">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding TypeName}" FontWeight="SemiBold" Foreground="{Binding Type, Converter={StaticResource ToneBrush}}" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+						<DataGridTextColumn Header="Subject" Binding="{Binding Subject}" Width="2*" />
+						<DataGridTemplateColumn Header="Related to" SortMemberPath="RelatedText" Width="2*">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock TextTrimming="CharacterEllipsis">
+										<Hyperlink Click="linkRelated_Click"><Run Text="{Binding RelatedText, Mode=OneWay}" /></Hyperlink>
+									</TextBlock>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+						<DataGridTextColumn Header="User" Binding="{Binding UserName}" Width="*" />
+						<DataGridTextColumn Header="Minutes" Binding="{Binding Duration}" Width="70" ElementStyle="{StaticResource NumberCell}" />
+					</DataGrid.Columns>
+				</DataGrid>
+				<TextBlock x:Name="emptyState" Text="No activities match the filters." Style="{StaticResource EmptyText}" Visibility="Collapsed" />
+			</Grid>
+		</Grid>
+	</DockPanel>
+</UserControl>

@@ -1,0 +1,20 @@
+/**
+ * Client profiles of Relay CRM, narrow to broad: Wisej applies the first profile that
+ * matches the browser, and "Default" (the designed layout) when none does. They go by
+ * the width of the browser, so resizing a desktop window switches them too.
+ *
+ *	Phone:   the sidebar behind the menu button, one card per row.
+ *	Tablet:  the sidebar as an icon rail, KPI tiles two by two.
+ */
+{
+	"profiles": [
+		{
+			"name": "Phone",
+			"maxWidth": 767
+		},
+		{
+			"name": "Tablet",
+			"maxWidth": 1199
+		}
+	]
+}
