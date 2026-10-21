@@ -128,7 +128,6 @@ namespace RelayCrm.Dialogs
 			//
 			// SearchDialog
 			//
-			this.AcceptButton = this.buttonOpen;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
 			this.CancelButton = this.buttonCancel;

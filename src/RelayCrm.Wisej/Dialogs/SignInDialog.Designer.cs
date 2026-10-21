@@ -143,7 +143,6 @@ namespace RelayCrm.Dialogs
 			//
 			// SignInDialog
 			//
-			this.AcceptButton = this.buttonSignIn;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = Wisej.Web.AutoScaleMode.Font;
 			this.CancelButton = this.buttonExit;
